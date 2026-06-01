@@ -1,0 +1,54 @@
+name: repository-quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate Python syntax without bytecode
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in Path('.').rglob('*.py'):
+              if '.git' in path.parts:
+                  continue
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+          print('python syntax: ok')
+          PY
+      - name: Validate skill frontmatter
+        run: python scripts/validate_skill_frontmatter.py
+      - name: Public distribution audit
+        run: python scripts/audit_public_distribution.py
+      - name: Check Markdown local links
+        run: |
+          python - <<'PY'
+          import re, sys
+          from pathlib import Path
+          errors=[]
+          for md in Path('.').rglob('*.md'):
+              if '.git' in md.parts:
+                  continue
+              text=md.read_text(encoding='utf-8')
+              for m in re.finditer(r'\[[^\]]+\]\(([^)]+)\)', text):
+                  url=m.group(1).split('#',1)[0]
+                  if not url or re.match(r'^[a-z]+:', url) or url.startswith('mailto:'):
+                      continue
+                  target=(md.parent / url).resolve()
+                  if not target.exists():
+                      errors.append(f'{md}:{m.start()}: broken local link {url}')
+          if errors:
+              print('\n'.join(errors))
+              sys.exit(1)
+          print('markdown local links: ok')
+          PY

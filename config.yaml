@@ -1,0 +1,29 @@
+# Safe starter config for the public researcher distribution.
+# Installers should tune provider/model/toolsets in their own Hermes config.
+model:
+  provider: auto
+  default: auto
+agent:
+  max_turns: 90
+  tool_use_enforcement: true
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+tools:
+  # These names document the intended capability set. Actual enablement depends on the installer's Hermes setup.
+  preferred_toolsets:
+    - web
+    - browser
+    - terminal
+    - file
+    - code_execution
+    - vision
+    - skills
+    - memory
+    - session_search
+    - todo
+    - clarify
+    - cronjob
+security:
+  # Recommended for public/shared installs; user may override locally.
+  redact_secrets: true

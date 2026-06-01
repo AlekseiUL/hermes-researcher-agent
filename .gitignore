@@ -1,0 +1,27 @@
+# Secrets and local runtime state
+.env
+.env.*
+!.env.EXAMPLE
+auth.json
+*.session
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+state.db*
+memories/
+sessions/
+logs/
+workspace/
+home/
+plans/
+cron/
+*_cache/
+
+# Generated artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+output/
+reports/private/
