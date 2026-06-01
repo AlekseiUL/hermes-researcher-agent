@@ -8,7 +8,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 skip_dirs = {".git", "__pycache__", ".pytest_cache"}
 patterns = {
-    "private_path": re.compile(r"/Users/[^/\s]+|MIKE_CENTER|AI_CENTER|\.openclaw", re.I),
+    "private_path": re.compile(r"/Users/[^/\s]+|/home/[^/\s]+/(?:private|internal|workspace)", re.I),
     "secret_assignment": re.compile(
         r"(?i)(api[_-]?key|secret|password|passwd|token|session_string|api_hash)\s*[:=]\s*[\"'][^\"']{6,}[\"']"
     ),

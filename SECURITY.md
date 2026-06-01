@@ -8,7 +8,9 @@ It should not contain secrets, credentials, private memory, sessions, logs, priv
 
 ## Reporting a vulnerability
 
-If you find a security issue in this repository, open a GitHub issue with a minimal reproduction and avoid posting real secrets or private data.
+If the issue involves secrets, credentials, private data, or an exploit path, do **not** paste sensitive material into a public issue. Use GitHub's private vulnerability reporting / Security Advisories when available, or open a minimal public issue that says private details are available to maintainers.
+
+For non-sensitive bugs, open a GitHub issue with a minimal reproduction.
 
 For issues in Hermes Agent itself, report them to the upstream Hermes Agent project.
 
