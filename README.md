@@ -157,7 +157,7 @@ The researcher profile is public-source by default. It should stop and ask befor
 
 ## Status / roadmap
 
-Current status: **v0.1 public distribution**.
+Current status: **v0.2 public distribution**.
 
 Possible next improvements:
 
@@ -362,7 +362,7 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущий статус: **v0.1 public distribution**.
+Текущий статус: **v0.2 public distribution**.
 
 Возможные следующие улучшения:
 
