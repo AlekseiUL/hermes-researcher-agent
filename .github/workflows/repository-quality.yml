@@ -26,6 +26,8 @@ jobs:
               ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
           print('python syntax: ok')
           PY
+      - name: Run helper tests
+        run: python scripts/test_github_traction_check.py
       - name: Validate skill frontmatter
         run: python scripts/validate_skill_frontmatter.py
       - name: Public distribution audit

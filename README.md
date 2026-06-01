@@ -42,6 +42,8 @@ It is not a private OSINT kit, credentials bundle, login-wall scraper, or schedu
 - **Research skill pack** — includes `research-intelligence` with source ladders, output templates, and safety rules.
 - **Browser-aware workflow** — browser verification is recommended when live page state, comments, metrics, visuals, or login walls matter.
 - **Public Reddit fallback helper** — handles blocked Reddit JSON as degraded coverage and uses archive hits only as leads that require live verification.
+- **GitHub traction helper** — collects public repo metadata, releases, latest commit, topics, license, stars/forks/watchers, and caveats metrics as proxies rather than usage proof.
+- **Example outputs** — includes real example briefs and generated GitHub traction checks under `examples/`.
 - **Bilingual documentation** — English and Russian instructions in one README.
 
 ## Installation
@@ -104,6 +106,21 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 Question -> Decision frame -> Source ladder -> Evidence collection -> Browser verification -> Evidence gate -> Decision-ready brief
 ```
 
+## Example outputs
+
+Real examples included in this repo:
+
+- [`examples/research-brief-researcher-agent-readiness.md`](examples/research-brief-researcher-agent-readiness.md) — decision brief on whether this repository is ready to promote.
+- [`examples/github-traction-hermes-researcher-agent.md`](examples/github-traction-hermes-researcher-agent.md) — generated GitHub traction check for this repository.
+- [`examples/github-traction-nousresearch-hermes-agent.md`](examples/github-traction-nousresearch-hermes-agent.md) — generated GitHub traction check for the upstream Hermes Agent repository.
+
+Run the GitHub helper yourself. `GITHUB_TOKEN` is optional and used only for GitHub API rate limits; the helper never prints token values.
+
+```bash
+python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
+python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+```
+
 ## Repository contents
 
 - [`distribution.yaml`](distribution.yaml) — Hermes profile distribution manifest.
@@ -113,6 +130,8 @@ Question -> Decision frame -> Source ladder -> Evidence collection -> Browser ve
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — deep research brief template.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — source ledger template.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
+- [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
+- [`examples/`](examples/) — real example briefs and helper outputs.
 - [`docs/assets/researcher-agent-cover.jpg`](docs/assets/researcher-agent-cover.jpg) — repository cover / agent poster.
 - [`.env.EXAMPLE`](.env.EXAMPLE) — optional environment variable names only; no secrets.
 - [`LICENSE`](LICENSE) — MIT license.
@@ -228,6 +247,8 @@ MIT. See [`LICENSE`](LICENSE).
 - **Research skill pack** — внутри `research-intelligence`: source ladders, шаблоны ответов, safety rules.
 - **Browser-aware workflow** — browser verification нужен, когда важны live page state, comments, metrics, visuals или login walls.
 - **Public Reddit fallback helper** — если Reddit JSON заблокирован, источник помечается как degraded, а archive hits считаются только leads для live-проверки.
+- **GitHub traction helper** — собирает public repo metadata, releases, latest commit, topics, license, stars/forks/watchers и честно помечает метрики как proxies, а не proof of usage.
+- **Example outputs** — реальные example briefs и generated GitHub traction checks лежат в `examples/`.
 - **Документация EN/RU** — английская и русская версии в одном README.
 
 ## Установка
@@ -290,6 +311,21 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 Вопрос -> Decision frame -> Source ladder -> Evidence collection -> Browser verification -> Evidence gate -> Decision-ready brief
 ```
 
+## Примеры output
+
+Реальные примеры внутри repo:
+
+- [`examples/research-brief-researcher-agent-readiness.md`](examples/research-brief-researcher-agent-readiness.md) — decision brief: готов ли этот repo к публичному показу.
+- [`examples/github-traction-hermes-researcher-agent.md`](examples/github-traction-hermes-researcher-agent.md) — generated GitHub traction check для этого repo.
+- [`examples/github-traction-nousresearch-hermes-agent.md`](examples/github-traction-nousresearch-hermes-agent.md) — generated GitHub traction check для upstream Hermes Agent repo.
+
+Запуск GitHub helper. `GITHUB_TOKEN` optional: он нужен только для GitHub API rate limits; helper не печатает token values.
+
+```bash
+python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
+python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+```
+
 ## Содержимое репозитория
 
 - [`distribution.yaml`](distribution.yaml) — manifest для Hermes profile distribution.
@@ -299,6 +335,8 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — шаблон глубокого research brief.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — шаблон source ledger.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
+- [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
+- [`examples/`](examples/) — реальные example briefs и helper outputs.
 - [`docs/assets/researcher-agent-cover.jpg`](docs/assets/researcher-agent-cover.jpg) — обложка / постер агента.
 - [`.env.EXAMPLE`](.env.EXAMPLE) — только имена optional env vars, без секретов.
 - [`LICENSE`](LICENSE) — MIT license.
