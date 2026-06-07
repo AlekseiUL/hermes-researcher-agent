@@ -27,7 +27,9 @@ jobs:
           print('python syntax: ok')
           PY
       - name: Run helper tests
-        run: python scripts/test_github_traction_check.py
+        run: |
+          python scripts/test_github_traction_check.py
+          python scripts/test_source_reach_doctor.py
       - name: Validate skill frontmatter
         run: python scripts/validate_skill_frontmatter.py
       - name: Public distribution audit

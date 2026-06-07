@@ -15,11 +15,19 @@
 ## Evidence
 
 - Source:
-  - Type: primary / structured / community / search / browser
+  - Type: primary / structured / community / search / browser / API / Jina / yt-dlp / RSS
   - Date checked:
+  - Access state: public / degraded / blocked / login_required
   - Fact:
   - Link:
   - Caveat:
+
+## Source reach
+
+- Source classes used:
+- Coverage gaps: transcripts / comments / search / API / rate-limit / login-wall / none
+- Approval needed: yes/no + exact reason
+- Confidence impact:
 
 ## Interpretation
 

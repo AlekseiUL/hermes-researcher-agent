@@ -41,8 +41,10 @@ It is not a private OSINT kit, credentials bundle, login-wall scraper, or schedu
 - **Public-source boundary** — no private data, sessions, cookies, credentials, or login-gated scraping by default.
 - **Research skill pack** — includes `research-intelligence` with source ladders, output templates, and safety rules.
 - **Browser-aware workflow** — browser verification is recommended when live page state, comments, metrics, visuals, or login walls matter.
+- **Safe source-reach doctor** — checks Jina Reader, GitHub public API, Reddit public/Jina fallback, and optional `yt-dlp` metadata/subtitle reach without cookies or login.
 - **Public Reddit fallback helper** — handles blocked Reddit JSON as degraded coverage and uses archive hits only as leads that require live verification.
 - **GitHub traction helper** — collects public repo metadata, releases, latest commit, topics, license, stars/forks/watchers, and caveats metrics as proxies rather than usage proof.
+- **Degraded-access reporting** — blocked, rate-limited, login-gated, or subtitle-missing sources are labeled as coverage gaps instead of hidden.
 - **Example outputs** — includes real example briefs and generated GitHub traction checks under `examples/`.
 - **Bilingual documentation** — English and Russian instructions in one README.
 
@@ -121,6 +123,20 @@ python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
 ```
 
+Run the safe source-reach doctor before serious research. It is read-only: no cookies, no login, no social actions, no MCP registration.
+
+```bash
+python3 tools/source_reach_doctor.py
+python3 tools/source_reach_doctor.py --json
+python3 tools/source_reach_doctor.py --skip-youtube
+```
+
+Typical interpretation:
+
+- `PASS` — public-source reach is healthy.
+- `WARN` / `PASS_AFTER_FIX` — research can continue, but the report should label the degraded layer.
+- `DEFER` — a social/login/MCP path exists or is missing, but it is approval-gated, not a default setup task.
+
 ## Repository contents
 
 - [`distribution.yaml`](distribution.yaml) — Hermes profile distribution manifest.
@@ -129,6 +145,7 @@ python3 tools/github_traction_check.py NousResearch/hermes-agent --json
 - [`skills/research-intelligence/SKILL.md`](skills/research-intelligence/SKILL.md) — installable research workflow skill.
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — deep research brief template.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — source ledger template.
+- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — safe public-source reach diagnostics: Jina, GitHub public API, Reddit fallback, optional YouTube subtitle smoke, and approval-gated social/MCP detection.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
 - [`examples/`](examples/) — real example briefs and helper outputs.
@@ -157,7 +174,9 @@ The researcher profile is public-source by default. It should stop and ask befor
 
 ## Status / roadmap
 
-Current status: **v0.2 public distribution**.
+Current status: **v0.2.2 public distribution**.
+
+v0.2.2 adds a safe source-reach doctor and clearer degraded-access rules for YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback, and approval-gated social/MCP tools.
 
 Possible next improvements:
 
@@ -246,8 +265,10 @@ MIT. See [`LICENSE`](LICENSE).
 - **Public-source boundary** — по умолчанию нет приватных данных, sessions, cookies, credentials и login-gated scraping.
 - **Research skill pack** — внутри `research-intelligence`: source ladders, шаблоны ответов, safety rules.
 - **Browser-aware workflow** — browser verification нужен, когда важны live page state, comments, metrics, visuals или login walls.
+- **Safe source-reach doctor** — проверяет Jina Reader, GitHub public API, Reddit public/Jina fallback и optional `yt-dlp` metadata/subtitles без cookies и login.
 - **Public Reddit fallback helper** — если Reddit JSON заблокирован, источник помечается как degraded, а archive hits считаются только leads для live-проверки.
 - **GitHub traction helper** — собирает public repo metadata, releases, latest commit, topics, license, stars/forks/watchers и честно помечает метрики как proxies, а не proof of usage.
+- **Degraded-access reporting** — blocked, rate-limited, login-gated или missing subtitles попадают в coverage gaps, а не прячутся.
 - **Example outputs** — реальные example briefs и generated GitHub traction checks лежат в `examples/`.
 - **Документация EN/RU** — английская и русская версии в одном README.
 
@@ -326,6 +347,20 @@ python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
 ```
 
+Перед серьёзным research можно прогнать safe source-reach doctor. Он read-only: без cookies, login, social actions и MCP registration.
+
+```bash
+python3 tools/source_reach_doctor.py
+python3 tools/source_reach_doctor.py --json
+python3 tools/source_reach_doctor.py --skip-youtube
+```
+
+Как читать результат:
+
+- `PASS` — public-source reach здоров.
+- `WARN` / `PASS_AFTER_FIX` — работать можно, но degraded layer надо честно отметить в отчёте.
+- `DEFER` — social/login/MCP путь существует или отсутствует, но это approval-gated, а не “нужно срочно поставить”.
+
 ## Содержимое репозитория
 
 - [`distribution.yaml`](distribution.yaml) — manifest для Hermes profile distribution.
@@ -334,6 +369,7 @@ python3 tools/github_traction_check.py NousResearch/hermes-agent --json
 - [`skills/research-intelligence/SKILL.md`](skills/research-intelligence/SKILL.md) — installable research workflow skill.
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — шаблон глубокого research brief.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — шаблон source ledger.
+- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — безопасная диагностика public-source reach: Jina, GitHub public API, Reddit fallback, optional YouTube subtitle smoke и detection approval-gated social/MCP tools.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
 - [`examples/`](examples/) — реальные example briefs и helper outputs.
@@ -362,7 +398,9 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущий статус: **v0.2 public distribution**.
+Текущий статус: **v0.2.2 public distribution**.
+
+В v0.2.2 добавлен safe source-reach doctor и более ясные degraded-access rules для YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback и approval-gated social/MCP tools.
 
 Возможные следующие улучшения:
 

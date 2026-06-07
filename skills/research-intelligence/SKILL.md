@@ -1,7 +1,7 @@
 ---
 name: research-intelligence
 description: Use when a Hermes agent must perform public-source research, source scouting, evidence grading, competitor/tool comparison, community-signal analysis, or decision-ready brief writing without private data or credentials.
-version: 1.0.0
+version: 1.1.0
 author: Aleksei Ulianov / Sprut_AI
 license: MIT
 metadata:
@@ -58,6 +58,45 @@ Use the highest-value source classes first:
 3. **Community ground truth:** Hacker News, Reddit, GitHub issues/discussions, forums, Stack Exchange, public Discord/Telegram mirrors only when accessible without login.
 4. **Search pivots:** exact phrases, domain searches, local-language terms, author names, repo names, company IDs, package names, error strings, quoted claims.
 5. **Browser verification:** real page state, dates, author identity, comments, visible metrics, UI, login wall, blocked state, screenshots, current context.
+
+## Safe Source-Reach Stack
+
+Default source reach is zero-secret and read-only. Use public layers first and label degraded access instead of reaching for cookies.
+
+Allowed by default:
+
+- Hermes web search/extract for ordinary pages, docs, feeds, and public APIs.
+- Browser verification for live page state, visible metrics, comments, UI, visual context, and blocked/login-wall evidence.
+- Jina Reader URL mode for readable public pages.
+- `yt-dlp` metadata and public subtitle/transcript checks without cookies.
+- GitHub public web/API checks; authenticated `gh` is optional, not required.
+- Reddit public page/search/JSON when available, then old Reddit/Jina/search fallback.
+- RSS, Atom, public JSON, package registries, and official unauthenticated endpoints.
+
+Approval-gated:
+
+- GitHub login/token setup.
+- X/Twitter, Reddit OAuth/login/cookies, XHS, Bili, LinkedIn, WeChat, Weibo, Douyin, or similar account/session tools.
+- Exa/API-key tools, paid APIs, trials, payments, MCP registration, or local agent config mutation.
+- Browser cookie/profile extraction.
+- Join/follow/like/comment/post/reply/DM or any other account action.
+
+For brittle public/social surfaces, include this block in the final brief when relevant:
+
+```text
+Source reach:
+- source classes used: web/browser/API/Jina/yt-dlp/RSS/etc.
+- access state: public / degraded / blocked / login_required
+- coverage gaps: transcripts/comments/search/API/rate-limit
+- approval needed: yes/no + exact reason
+- confidence impact: what evidence remains weak because of access limits
+```
+
+Before serious research, run the optional local doctor from the repository root:
+
+```bash
+python3 tools/source_reach_doctor.py
+```
 
 ## Search Tactics
 
