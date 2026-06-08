@@ -121,6 +121,29 @@ def check_github_public_api(checks: list[Check], fetcher: Callable[[str, int, in
         checks.append(Check("GitHub public API", "WARN", text[:180]))
 
 
+def check_markitdown(
+    checks: list[Check],
+    runner: Callable[[list[str], int], tuple[int, str]] = run,
+    finder: Callable[[str], Optional[str]] = command,
+) -> None:
+    """Detect optional local document-to-Markdown ingestion support without installing anything."""
+    cli = finder("markitdown")
+    if cli:
+        code, out = runner([cli, "--version"], TIMEOUT)
+        if code == 0:
+            version = out.splitlines()[0] if out else "version unknown"
+            checks.append(Check("MarkItDown document ingestion", "PASS", f"CLI available: {version}"))
+        else:
+            checks.append(Check("MarkItDown document ingestion", "WARN", f"CLI found but version check failed: {out[:160]}"))
+        return
+
+    code, out = runner(["python3", "-c", "import markitdown; print('python module available')"], TIMEOUT)
+    if code == 0:
+        checks.append(Check("MarkItDown document ingestion", "PASS", "Python module available; CLI not found in PATH"))
+    else:
+        checks.append(Check("MarkItDown document ingestion", "WARN", "not installed; local PDF/DOCX/PPTX-to-Markdown ingestion is unavailable"))
+
+
 def check_ytdlp(checks: list[Check], runner: Callable[[list[str], int], tuple[int, str]] = run) -> None:
     if not command("yt-dlp"):
         checks.append(Check("yt-dlp", "WARN", "not installed; YouTube metadata/transcript reach will be limited"))
@@ -200,6 +223,7 @@ def collect_checks(skip_live: bool = False, skip_youtube: bool = False) -> list[
         check_reddit_public_fallback(checks)
     else:
         checks.append(Check("live web checks", "DEFER", "skipped by --skip-live"))
+    check_markitdown(checks)
     if not skip_youtube:
         check_ytdlp(checks)
     else:

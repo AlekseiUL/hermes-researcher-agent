@@ -1,6 +1,6 @@
 name: hermes-researcher-agent
-version: 0.2.2
-description: "A privacy-safe Hermes researcher profile for public-source research, evidence grading, source scouting, and decision-ready briefs."
+version: 0.2.3
+description: "A privacy-safe Hermes researcher profile for public-source research, document ingestion, evidence grading, source scouting, and decision-ready briefs."
 author: "Aleksei Ulianov / Sprut_AI"
 license: "MIT"
 repository: "https://github.com/AlekseiUL/hermes-researcher-agent"

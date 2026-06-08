@@ -40,6 +40,7 @@ It is not a private OSINT kit, credentials bundle, login-wall scraper, or schedu
 - **Evidence gate** — every serious answer checks source quality, freshness, caveats, and next move.
 - **Public-source boundary** — no private data, sessions, cookies, credentials, or login-gated scraping by default.
 - **Research skill pack** — includes `research-intelligence` with source ladders, output templates, and safety rules.
+- **Document ingestion** — includes a sanitized `markitdown-document-ingestion` skill for turning public PDFs, DOCX, PPTX, XLSX, HTML, CSV/JSON/XML, EPUB, and inspected trusted document bundles into Markdown before the evidence gate.
 - **Browser-aware workflow** — browser verification is recommended when live page state, comments, metrics, visuals, or login walls matter.
 - **Safe source-reach doctor** — checks Jina Reader, GitHub public API, Reddit public/Jina fallback, and optional `yt-dlp` metadata/subtitle reach without cookies or login.
 - **Public Reddit fallback helper** — handles blocked Reddit JSON as degraded coverage and uses archive hits only as leads that require live verification.
@@ -90,6 +91,12 @@ The profile is designed to be useful with these Hermes toolsets when available:
 4. Let the agent collect public evidence and label limitations.
 5. Use the returned brief: verdict, evidence, interpretation, caveat, next move.
 
+For document-heavy research, convert the source into a Markdown analysis copy first, then cite the original as source-of-truth:
+
+```bash
+markitdown ./sources/report.pdf -o ./research-artifacts/report.md
+```
+
 Example prompt:
 
 ```text
@@ -134,7 +141,7 @@ python3 tools/source_reach_doctor.py --skip-youtube
 Typical interpretation:
 
 - `PASS` — public-source reach is healthy.
-- `WARN` / `PASS_AFTER_FIX` — research can continue, but the report should label the degraded layer.
+- `WARN` / `PASS_AFTER_FIX` — research can continue, but the report should label the degraded layer. Missing MarkItDown is a warning for document-heavy work, not a blocker for ordinary web research.
 - `DEFER` — a social/login/MCP path exists or is missing, but it is approval-gated, not a default setup task.
 
 ## Repository contents
@@ -143,9 +150,10 @@ Typical interpretation:
 - [`SOUL.md`](SOUL.md) — researcher operating prompt.
 - [`config.yaml`](config.yaml) — safe starter config and preferred capability set.
 - [`skills/research-intelligence/SKILL.md`](skills/research-intelligence/SKILL.md) — installable research workflow skill.
+- [`skills/markitdown-document-ingestion/SKILL.md`](skills/markitdown-document-ingestion/SKILL.md) — optional document-to-Markdown intake workflow for public research files.
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — deep research brief template.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — source ledger template.
-- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — safe public-source reach diagnostics: Jina, GitHub public API, Reddit fallback, optional YouTube subtitle smoke, and approval-gated social/MCP detection.
+- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — safe public-source reach diagnostics: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke, and approval-gated social/MCP detection.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
 - [`examples/`](examples/) — real example briefs and helper outputs.
@@ -174,9 +182,9 @@ The researcher profile is public-source by default. It should stop and ask befor
 
 ## Status / roadmap
 
-Current status: **v0.2.2 public distribution**.
+Current status: **v0.2.3 public distribution**.
 
-v0.2.2 adds a safe source-reach doctor and clearer degraded-access rules for YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback, and approval-gated social/MCP tools.
+v0.2.3 adds safe document-ingestion guidance for converting public research files into Markdown before evidence review, plus optional MarkItDown detection in the source-reach doctor. v0.2.2 added the safe source-reach doctor and degraded-access rules for YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback, and approval-gated social/MCP tools.
 
 Possible next improvements:
 
@@ -264,6 +272,7 @@ MIT. See [`LICENSE`](LICENSE).
 - **Evidence gate** — серьёзный ответ проверяет качество источников, свежесть, caveats и следующий шаг.
 - **Public-source boundary** — по умолчанию нет приватных данных, sessions, cookies, credentials и login-gated scraping.
 - **Research skill pack** — внутри `research-intelligence`: source ladders, шаблоны ответов, safety rules.
+- **Document ingestion** — внутри есть чистый `markitdown-document-ingestion` skill: публичные PDF, DOCX, PPTX, XLSX, HTML, CSV/JSON/XML, EPUB и проверенные trusted document bundles можно переводить в Markdown перед evidence gate.
 - **Browser-aware workflow** — browser verification нужен, когда важны live page state, comments, metrics, visuals или login walls.
 - **Safe source-reach doctor** — проверяет Jina Reader, GitHub public API, Reddit public/Jina fallback и optional `yt-dlp` metadata/subtitles без cookies и login.
 - **Public Reddit fallback helper** — если Reddit JSON заблокирован, источник помечается как degraded, а archive hits считаются только leads для live-проверки.
@@ -314,6 +323,12 @@ hermes -p researcher-test tools
 4. Агент собирает открытые evidence и честно маркирует ограничения.
 5. На выходе: verdict, evidence, interpretation, caveat, next move.
 
+Если задача завязана на документ, сначала делается Markdown-копия для анализа, а оригинал остаётся source-of-truth:
+
+```bash
+markitdown ./sources/report.pdf -o ./research-artifacts/report.md
+```
+
 Пример запроса:
 
 ```text
@@ -358,7 +373,7 @@ python3 tools/source_reach_doctor.py --skip-youtube
 Как читать результат:
 
 - `PASS` — public-source reach здоров.
-- `WARN` / `PASS_AFTER_FIX` — работать можно, но degraded layer надо честно отметить в отчёте.
+- `WARN` / `PASS_AFTER_FIX` — работать можно, но degraded layer надо честно отметить в отчёте. Если MarkItDown не установлен, это warning для document-heavy задач, а не блокер обычного web research.
 - `DEFER` — social/login/MCP путь существует или отсутствует, но это approval-gated, а не “нужно срочно поставить”.
 
 ## Содержимое репозитория
@@ -367,9 +382,10 @@ python3 tools/source_reach_doctor.py --skip-youtube
 - [`SOUL.md`](SOUL.md) — рабочий prompt researcher-агента.
 - [`config.yaml`](config.yaml) — безопасный starter config и preferred capability set.
 - [`skills/research-intelligence/SKILL.md`](skills/research-intelligence/SKILL.md) — installable research workflow skill.
+- [`skills/markitdown-document-ingestion/SKILL.md`](skills/markitdown-document-ingestion/SKILL.md) — optional workflow для перевода публичных research-файлов в Markdown.
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — шаблон глубокого research brief.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — шаблон source ledger.
-- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — безопасная диагностика public-source reach: Jina, GitHub public API, Reddit fallback, optional YouTube subtitle smoke и detection approval-gated social/MCP tools.
+- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — безопасная диагностика public-source reach: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke и detection approval-gated social/MCP tools.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
 - [`examples/`](examples/) — реальные example briefs и helper outputs.
@@ -398,9 +414,9 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущий статус: **v0.2.2 public distribution**.
+Текущий статус: **v0.2.3 public distribution**.
 
-В v0.2.2 добавлен safe source-reach doctor и более ясные degraded-access rules для YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback и approval-gated social/MCP tools.
+В v0.2.3 добавлен безопасный document-ingestion слой: публичные research-файлы можно переводить в Markdown перед evidence review, а source-reach doctor теперь отдельно показывает, доступен ли MarkItDown. В v0.2.2 был добавлен safe source-reach doctor и degraded-access rules для YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback и approval-gated social/MCP tools.
 
 Возможные следующие улучшения:
 

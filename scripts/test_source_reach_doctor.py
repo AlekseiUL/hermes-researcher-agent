@@ -36,6 +36,31 @@ def main() -> int:
     assert checks[2].name == "Reddit public fallback"
     assert "Jina/old.reddit fallback works" in checks[2].note
 
+    module.check_markitdown(
+        checks,
+        runner=lambda args, timeout: (0, "markitdown 0.1.test") if args[:2] == ["/usr/bin/markitdown", "--version"] else (1, "unexpected"),
+        finder=lambda name: "/usr/bin/markitdown" if name == "markitdown" else None,
+    )
+    assert checks[-1].name == "MarkItDown document ingestion"
+    assert checks[-1].status == "PASS"
+
+    module_fallback_checks = []
+    module.check_markitdown(
+        module_fallback_checks,
+        runner=lambda args, timeout: (0, "python module available") if args[:2] == ["python3", "-c"] else (1, "unexpected"),
+        finder=lambda name: None,
+    )
+    assert module_fallback_checks[0].status == "PASS"
+    assert "Python module available" in module_fallback_checks[0].note
+
+    fallback_checks = []
+    module.check_markitdown(
+        fallback_checks,
+        runner=lambda args, timeout: (1, "missing"),
+        finder=lambda name: None,
+    )
+    assert fallback_checks[0].status == "WARN"
+
     text, code = module.verdict(checks)
     assert code == 0
     assert text.startswith("PASS")

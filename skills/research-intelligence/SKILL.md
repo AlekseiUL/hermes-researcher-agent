@@ -1,7 +1,7 @@
 ---
 name: research-intelligence
 description: Use when a Hermes agent must perform public-source research, source scouting, evidence grading, competitor/tool comparison, community-signal analysis, or decision-ready brief writing without private data or credentials.
-version: 1.1.0
+version: 1.2.0
 author: Aleksei Ulianov / Sprut_AI
 license: MIT
 metadata:
@@ -42,19 +42,20 @@ Do not use for:
 
 1. **Frame the decision.** Name the user decision: adopt, buy, compare, reject, watch, implement, contact, investigate, or hand off.
 2. **Build the source ladder.** Pick source classes before searching.
-3. **Collect dated facts.** Include timestamps for volatile data like stars, downloads, prices, package versions, and community metrics.
-4. **Triangulate important claims.** Corroborate technical/product claims with primary sources when possible.
-5. **Classify signal strength.** Use fact / claim / weak signal / hypothesis / interpretation.
-6. **Browser-check the shortlist.** Use a real browser for dynamic/social/visual pages when live state matters.
-7. **Run the evidence gate.** Fix gaps or label limitations before final answer.
-8. **Return the next move.** A good brief ends with a practical action.
+3. **Ingest documents when needed.** For public PDFs, DOCX, PPTX, spreadsheets, HTML, EPUB, or inspected trusted document bundles, create a Markdown analysis copy with `markitdown-document-ingestion` before summarizing.
+4. **Collect dated facts.** Include timestamps for volatile data like stars, downloads, prices, package versions, and community metrics.
+5. **Triangulate important claims.** Corroborate technical/product claims with primary sources when possible.
+6. **Classify signal strength.** Use fact / claim / weak signal / hypothesis / interpretation.
+7. **Browser-check the shortlist.** Use a real browser for dynamic/social/visual pages when live state matters.
+8. **Run the evidence gate.** Fix gaps or label limitations before final answer.
+9. **Return the next move.** A good brief ends with a practical action.
 
 ## Source Ladder
 
 Use the highest-value source classes first:
 
 1. **Primary sources:** official docs, repositories, changelogs, release notes, pricing pages, standards, papers, product pages, government/regulator pages.
-2. **Structured public data:** GitHub API, npm/PyPI metadata, Docker tags, package registries, RSS/Atom, public JSON endpoints, datasets, PDFs, CSVs.
+2. **Structured public data and documents:** GitHub API, npm/PyPI metadata, Docker tags, package registries, RSS/Atom, public JSON endpoints, datasets, PDFs, DOCX/PPTX/XLSX, CSVs, and inspected trusted document bundles converted to Markdown when useful.
 3. **Community ground truth:** Hacker News, Reddit, GitHub issues/discussions, forums, Stack Exchange, public Discord/Telegram mirrors only when accessible without login.
 4. **Search pivots:** exact phrases, domain searches, local-language terms, author names, repo names, company IDs, package names, error strings, quoted claims.
 5. **Browser verification:** real page state, dates, author identity, comments, visible metrics, UI, login wall, blocked state, screenshots, current context.
@@ -71,7 +72,7 @@ Allowed by default:
 - `yt-dlp` metadata and public subtitle/transcript checks without cookies.
 - GitHub public web/API checks; authenticated `gh` is optional, not required.
 - Reddit public page/search/JSON when available, then old Reddit/Jina/search fallback.
-- RSS, Atom, public JSON, package registries, and official unauthenticated endpoints.
+- RSS, Atom, public JSON, package registries, public documents, and official unauthenticated endpoints.
 
 Approval-gated:
 
@@ -97,6 +98,28 @@ Before serious research, run the optional local doctor from the repository root:
 ```bash
 python3 tools/source_reach_doctor.py
 ```
+
+## Document ingestion
+
+For public research files, use the companion `markitdown-document-ingestion` skill when available. Convert documents into Markdown analysis copies before extracting claims or writing a brief.
+
+Good targets:
+
+- public PDFs, reports, papers, policy documents and manuals;
+- DOCX / PPTX / XLSX files supplied as public evidence;
+- HTML, CSV, JSON, XML, EPUB, and trusted small ZIP bundles only after size/file-count/path inspection.
+
+After conversion, record the ingestion state:
+
+```text
+Document ingestion:
+- original: <file/source>
+- converted copy: <path if saved>
+- status: complete / partial / OCR-needed / degraded
+- caveat: <tables/pages/images/comments that may be missing>
+```
+
+The original document remains source-of-truth. The Markdown copy is only for analysis. Scanned PDFs may need OCR; archives need provenance and path/size inspection; label those gaps instead of pretending full extraction succeeded.
 
 ## Search Tactics
 
@@ -159,7 +182,7 @@ Allowed by default:
 - official APIs and feeds;
 - public repositories and package metadata;
 - public forums and comments visible without login;
-- public PDFs, datasets, registries, and archives;
+- public PDFs, documents, datasets, registries, and inspected trusted document bundles within the archive rules above;
 - browser verification of public pages.
 
 Requires explicit user approval:
