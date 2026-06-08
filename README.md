@@ -4,7 +4,7 @@
 
 ![Hermes Researcher Agent cover: dramatic researcher poster with the text “researcher” and “из-под земли достану”.](docs/assets/researcher-agent-cover.jpg)
 
-A privacy-safe Hermes Agent profile for public-source research, source scouting, evidence grading, and decision-ready briefs.
+A privacy-safe Hermes Agent profile for public-source research, document ingestion, source scouting, evidence grading, and decision-ready briefs.
 
 **Tagline:** Public-source research with an evidence gate — no private data, no secret sauce leaks.
 
@@ -238,7 +238,7 @@ MIT. See [`LICENSE`](LICENSE).
 
 ![Обложка Hermes Researcher Agent: драматичный постер исследователя с текстом “researcher” и “из-под земли достану”.](docs/assets/researcher-agent-cover.jpg)
 
-Безопасный профиль Hermes Agent для research-задач по открытым источникам: поиск источников, проверка фактов, оценка доказательств и короткие решения, по которым можно действовать.
+Безопасный профиль Hermes Agent для research-задач по открытым источникам: приём документов в Markdown, поиск источников, проверка фактов, оценка доказательств и короткие решения, по которым можно действовать.
 
 **Формула:** исследователь по открытым источникам с evidence gate — без приватных данных, без секретов и без утечки внутренней кухни.
 
