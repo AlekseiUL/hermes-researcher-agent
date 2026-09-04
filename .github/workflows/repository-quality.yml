@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
@@ -31,6 +33,8 @@ jobs:
           python scripts/test_github_traction_check.py
           python scripts/test_source_reach_doctor.py
           python scripts/test_evidence_lineage_check.py
+          python scripts/test_audit_public_distribution.py
+          python scripts/test_public_reddit_fallback_search.py
           python tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
       - name: Validate skill frontmatter
         run: python scripts/validate_skill_frontmatter.py

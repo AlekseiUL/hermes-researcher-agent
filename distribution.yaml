@@ -1,19 +1,9 @@
 name: hermes-researcher-agent
-version: 0.3.0
+version: 0.3.1
 description: "A privacy-safe Hermes researcher profile with research modes, source-lineage checks, counterexample gates, document ingestion, and decision-ready briefs."
 author: "Aleksei Ulianov / Sprut_AI"
 license: "MIT"
 repository: "https://github.com/AlekseiUL/hermes-researcher-agent"
-env_requires:
-  - name: OPENAI_API_KEY
-    description: "Optional: model provider key if you use OpenAI directly. You may use another Hermes-supported provider instead."
-    required: false
-  - name: OPENROUTER_API_KEY
-    description: "Optional: model provider key if you use OpenRouter. You may use another Hermes-supported provider instead."
-    required: false
-  - name: TAVILY_API_KEY
-    description: "Optional: web search/extract backend if configured in your Hermes installation."
-    required: false
 notes:
   - "No private memories, sessions, auth files, cron jobs, API keys, or owner-specific sources are included."
-  - "Use your own Hermes config, model provider, gateway, browser backend, and credentials."
+  - "The profile installs without credentials. Configure your own Hermes model provider and optional search/browser backends after installation."

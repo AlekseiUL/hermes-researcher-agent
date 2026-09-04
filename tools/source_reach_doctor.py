@@ -197,7 +197,11 @@ def check_reddit_public_fallback(checks: list[Check], fetcher: Callable[[str, in
         checks.append(Check("Reddit public fallback", "WARN", f"public fallback degraded ({first_note}; Jina HTTP {jina_status})"))
 
 
-def check_deferred_tools(checks: list[Check], names: Iterable[str] = ("bird", "twitter", "rdt", "xhs", "bili", "mcporter")) -> None:
+def check_deferred_tools(
+    checks: list[Check],
+    names: Iterable[str] = ("bird", "twitter", "rdt", "xhs", "bili", "mcporter"),
+    finder: Callable[[str], Optional[str]] = command,
+) -> None:
     notes = {
         "bird": "X/Twitter tool may include read/write commands and cookie/session use",
         "twitter": "X/Twitter tooling usually requires account/session access",
@@ -207,9 +211,15 @@ def check_deferred_tools(checks: list[Check], names: Iterable[str] = ("bird", "t
         "mcporter": "MCP routing/registration changes local agent configuration",
     }
     for name in names:
-        path = command(name)
+        path = finder(name)
         if path:
-            checks.append(Check(name, "DEFER", f"present: {path}; {notes.get(name, 'approval-gated tool')}; not executed"))
+            checks.append(
+                Check(
+                    name,
+                    "DEFER",
+                    f"present in PATH; {notes.get(name, 'approval-gated tool')}; not executed",
+                )
+            )
         else:
             checks.append(Check(name, "DEFER", f"missing; {notes.get(name, 'approval-gated tool')}; install/use only after explicit approval"))
 

@@ -4,8 +4,8 @@
 Given OWNER/REPO, collect public GitHub metadata and print either JSON or a
 short Markdown evidence brief.
 
-Public-only by default. Uses GITHUB_TOKEN only if already present in the local
-environment to raise rate limits; never prints token values.
+Public-only by default. Authentication is opt-in, private repositories are
+rejected, and token values are never printed.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -21,6 +22,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 API = "https://api.github.com"
 UA = "hermes-public-researcher-github-traction/0.2"
+OWNER_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?\Z")
+REPO_RE = re.compile(r"[A-Za-z0-9_.-]{1,100}\Z")
 
 
 class FetchError(RuntimeError):
@@ -36,6 +39,10 @@ def parse_repo(value: str) -> Tuple[str, str]:
     parts = [p for p in value.split("/") if p]
     if len(parts) != 2:
         raise SystemExit("repo must be OWNER/REPO or https://github.com/OWNER/REPO")
+    if OWNER_RE.fullmatch(parts[0]) is None or REPO_RE.fullmatch(parts[1]) is None:
+        raise SystemExit("repo contains an invalid GitHub owner or repository name")
+    if parts[1] in {".", ".."}:
+        raise SystemExit("repo contains an invalid GitHub repository name")
     return parts[0], parts[1]
 
 
@@ -76,7 +83,10 @@ def collect(owner: str, repo: str, token: Optional[str] = None) -> Dict[str, Any
         "errors": [],
     }
 
-    metadata, meta_headers = request_json(f"/repos/{owner}/{repo}", token=token)
+    # Establish public visibility without credentials before any authenticated request.
+    metadata, meta_headers = request_json(f"/repos/{owner}/{repo}", token=None)
+    if metadata.get("visibility") != "public" or metadata.get("private") is True:
+        raise FetchError("repository is not public; refusing to collect or print private metadata")
     result["sources"].append({"type": "github_repo_api", "path": f"/repos/{owner}/{repo}", **meta_headers})
     default_branch = (metadata.get("default_branch") or "main")
 
@@ -256,11 +266,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Collect public GitHub traction metadata for OWNER/REPO.")
     parser.add_argument("repo", help="OWNER/REPO or https://github.com/OWNER/REPO")
     parser.add_argument("--json", action="store_true", help="print JSON instead of Markdown")
-    parser.add_argument("--token-env", default="GITHUB_TOKEN", help="optional token env var name (default: GITHUB_TOKEN)")
+    parser.add_argument(
+        "--token-env",
+        default="",
+        help="explicit optional token env var for rate limits; private repositories remain blocked",
+    )
     args = parser.parse_args()
 
     owner, repo = parse_repo(args.repo)
-    token = os.getenv(args.token_env) or None
+    token = (os.getenv(args.token_env) or None) if args.token_env else None
     try:
         data = collect(owner, repo, token=token)
     except FetchError as exc:

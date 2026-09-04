@@ -56,8 +56,13 @@ It is not a private OSINT kit, credentials bundle, login-wall scraper, or schedu
 ## Installation
 
 ```bash
-hermes profile install github.com/AlekseiUL/hermes-researcher-agent --alias
+hermes profile install github.com/AlekseiUL/hermes-researcher-agent
+hermes profile show hermes-researcher-agent
+hermes -p hermes-researcher-agent setup
+hermes -p hermes-researcher-agent chat
 ```
+
+The distribution installs without API keys. Provider and optional search/browser credentials stay in your own local Hermes profile; do not paste them into chat or commit `.env`.
 
 For local testing from a clone:
 
@@ -127,17 +132,24 @@ Real examples included in this repo:
 - [`examples/github-traction-hermes-researcher-agent.md`](examples/github-traction-hermes-researcher-agent.md) — generated GitHub traction check for this repository.
 - [`examples/github-traction-nousresearch-hermes-agent.md`](examples/github-traction-nousresearch-hermes-agent.md) — generated GitHub traction check for the upstream Hermes Agent repository.
 
-Run the GitHub helper yourself. `GITHUB_TOKEN` is optional and used only for GitHub API rate limits; the helper never prints token values.
+Run the GitHub helper yourself. It is unauthenticated by default and refuses private repositories. If public API rate limits require authentication, opt in explicitly with `--token-env GITHUB_TOKEN`; the helper still rejects private visibility and never prints token values.
 
 ```bash
 python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+python3 tools/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
 ```
 
 Validate the included reproducible research run. It reports both page count and independent lineage count, so copied announcements cannot inflate the evidence:
 
 ```bash
 python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+```
+
+Use the Reddit fallback only for public, non-sensitive queries. The query is transmitted to Reddit and public archive endpoints; before network access, the CLI rejects email addresses, local paths, phone-like values, and common token shapes:
+
+```bash
+python3 tools/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
 ```
 
 Run the safe source-reach doctor before serious research. It is read-only: no cookies, no login, no social actions, no MCP registration.
@@ -196,9 +208,9 @@ The researcher profile is public-source by default. It should stop and ask befor
 
 ## Status / roadmap
 
-Current status: **v0.3.0 public distribution**.
+Current status: **v0.3.1 public distribution**.
 
-v0.3.0 adds six bounded research modes, source-lineage deduplication, a counterexample gate, and a runnable validator for reproducible `research-run/v1` evidence artifacts. It does not add account access, enabled monitoring, private source lists, or autonomous external actions.
+v0.3.1 hardens privacy and installation: credentials are opt-in, private GitHub repositories are rejected, Reddit/archive queries receive a local sensitive-input check, generated diagnostics omit local executable paths, and CI scans all reachable Git blobs. v0.3.0 added six bounded research modes, source-lineage deduplication, a counterexample gate, and a runnable validator for reproducible `research-run/v1` evidence artifacts. The distribution does not add account access, enabled monitoring, private source lists, or autonomous external actions.
 
 Possible next improvements:
 
@@ -302,8 +314,13 @@ MIT. See [`LICENSE`](LICENSE).
 ## Установка
 
 ```bash
-hermes profile install github.com/AlekseiUL/hermes-researcher-agent --alias
+hermes profile install github.com/AlekseiUL/hermes-researcher-agent
+hermes profile show hermes-researcher-agent
+hermes -p hermes-researcher-agent setup
+hermes -p hermes-researcher-agent chat
 ```
+
+Дистрибутив устанавливается без API-ключей. Ключи провайдера и optional search/browser backends остаются только в вашем локальном Hermes-профиле: не вставляйте их в чат и не коммитьте `.env`.
 
 Локальный тест из clone:
 
@@ -373,17 +390,24 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 - [`examples/github-traction-hermes-researcher-agent.md`](examples/github-traction-hermes-researcher-agent.md) — generated GitHub traction check для этого repo.
 - [`examples/github-traction-nousresearch-hermes-agent.md`](examples/github-traction-nousresearch-hermes-agent.md) — generated GitHub traction check для upstream Hermes Agent repo.
 
-Запуск GitHub helper. `GITHUB_TOKEN` optional: он нужен только для GitHub API rate limits; helper не печатает token values.
+Запуск GitHub helper. По умолчанию он работает без авторизации и отказывается читать private-репозитории. Если для public API не хватает rate limit, токен включается явно через `--token-env GITHUB_TOKEN`; private visibility всё равно блокируется, значение токена не печатается.
 
 ```bash
 python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+python3 tools/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
 ```
 
 Проверка воспроизводимого research-run. В результате отдельно показаны количество страниц и количество независимых линий источников:
 
 ```bash
 python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+```
+
+Reddit fallback предназначен только для открытых, нечувствительных запросов. Запрос передаётся Reddit и публичным архивным endpoints; перед обращением к сети CLI блокирует email, локальные пути, похожие на телефон значения и распространённые форматы токенов:
+
+```bash
+python3 tools/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
 ```
 
 Перед серьёзным research можно прогнать safe source-reach doctor. Он read-only: без cookies, login, social actions и MCP registration.
@@ -442,9 +466,9 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущий статус: **v0.3.0 public distribution**.
+Текущий статус: **v0.3.1 public distribution**.
 
-В v0.3.0 добавлены шесть ограниченных режимов исследования, группировка копий по происхождению, обязательный поиск контрпримеров и запускаемый валидатор для воспроизводимых `research-run/v1` артефактов. Версия не добавляет доступ к аккаунтам, включённый мониторинг, приватные списки источников или автономные внешние действия.
+В v0.3.1 усилены приватность и установка: credentials включаются только явно, private GitHub-репозитории блокируются, Reddit/archive-запросы проверяются на чувствительные данные, diagnostics не показывают локальные пути, а CI сканирует всю доступную Git-историю. В v0.3.0 добавлены шесть ограниченных режимов исследования, группировка копий по происхождению, обязательный поиск контрпримеров и запускаемый валидатор для воспроизводимых `research-run/v1` артефактов. Дистрибутив не добавляет доступ к аккаунтам, включённый мониторинг, приватные списки источников или автономные внешние действия.
 
 Возможные следующие улучшения:
 

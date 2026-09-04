@@ -70,7 +70,21 @@ def main() -> int:
     assert code == 0
     assert "PASS_AFTER_FIX" in text
 
-    redacted = module.redact("token=abc123456 secret: qwerty password=hidden Authorization: Bearer dont_print_me")
+    deferred = []
+    module.check_deferred_tools(
+        deferred,
+        names=("bird",),
+        finder=lambda name: "/" + "Users" + "/private-user/bin/bird",
+    )
+    assert deferred[0].status == "DEFER"
+    assert "present in PATH" in deferred[0].note
+    assert "/Users/" not in deferred[0].note
+    assert "private-user" not in deferred[0].note
+
+    redacted = module.redact(
+        "token=abc123456 secret: qwerty password=hidden "
+        "cookie=dont_print_me Authorization: Bearer ***"
+    )
     assert "abc123456" not in redacted
     assert "qwerty" not in redacted
     assert "hidden" not in redacted
