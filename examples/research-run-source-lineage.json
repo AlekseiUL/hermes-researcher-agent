@@ -1,0 +1,82 @@
+{
+  "schema_version": "research-run/v1",
+  "research_id": "lineage-demo-001",
+  "mode": "deep_research",
+  "question": "Does the announced integration have evidence beyond the vendor announcement?",
+  "decision": "Watch rather than adopt until independent operational evidence appears.",
+  "collected_at": "2026-09-02T12:00:00Z",
+  "sources": [
+    {
+      "id": "vendor-announcement",
+      "title": "Vendor integration announcement",
+      "url": "https://example.com/vendor/announcement",
+      "source_class": "primary",
+      "capture_method": "web",
+      "lineage_id": "vendor-announcement-lineage",
+      "access_state": "public",
+      "checked_at": "2026-09-02T11:30:00Z"
+    },
+    {
+      "id": "news-copy-one",
+      "title": "News site repeats the announcement",
+      "url": "https://example.net/news/copy-one",
+      "source_class": "independent",
+      "capture_method": "web",
+      "lineage_id": "vendor-announcement-lineage",
+      "access_state": "public",
+      "checked_at": "2026-09-02T11:35:00Z"
+    },
+    {
+      "id": "news-copy-two",
+      "title": "Another article repeats the same announcement",
+      "url": "https://example.org/articles/copy-two",
+      "source_class": "independent",
+      "capture_method": "web",
+      "lineage_id": "vendor-announcement-lineage",
+      "access_state": "public",
+      "checked_at": "2026-09-02T11:40:00Z"
+    },
+    {
+      "id": "public-api-state",
+      "title": "Public API shows the integration state",
+      "url": "https://api.example.com/integrations/status",
+      "source_class": "structured_data",
+      "capture_method": "api",
+      "lineage_id": "public-api-state-lineage",
+      "access_state": "public",
+      "checked_at": "2026-09-02T11:45:00Z"
+    },
+    {
+      "id": "user-issue",
+      "title": "Public issue reports an unsupported workflow",
+      "url": "https://example.com/vendor/project/issues/42",
+      "source_class": "community",
+      "capture_method": "browser",
+      "lineage_id": "user-issue-lineage",
+      "access_state": "public",
+      "checked_at": "2026-09-02T11:50:00Z"
+    }
+  ],
+  "claims": [
+    {
+      "id": "integration-exists",
+      "statement": "The integration exists publicly, but the announcement copies do not provide independent adoption evidence.",
+      "classification": "fact",
+      "decision_relevant": true,
+      "evidence_source_ids": [
+        "vendor-announcement",
+        "news-copy-one",
+        "news-copy-two",
+        "public-api-state"
+      ],
+      "counterexample_source_ids": ["user-issue"],
+      "counterexample_status": "found",
+      "counterexample_note": "A public issue shows that at least one advertised workflow is not supported.",
+      "confidence": "high"
+    }
+  ],
+  "coverage_gaps": [
+    "No independent production case or package-download evidence was found in the checked public sources."
+  ],
+  "next_move": "Run one bounded local compatibility test before adoption."
+}

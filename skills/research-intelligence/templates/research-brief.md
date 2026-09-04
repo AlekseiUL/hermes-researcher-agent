@@ -2,6 +2,7 @@
 
 ## Decision frame
 
+- Research mode: quick_fact / deep_research / repo_tool / community_pain / live_visual / monitoring_design
 - Decision:
 - Audience:
 - Success criteria:
@@ -15,12 +16,27 @@
 ## Evidence
 
 - Source:
-  - Type: primary / structured / community / search / browser / API / Jina / yt-dlp / RSS
+  - Source class: primary / structured_data / independent / community / discovery
+  - Capture method: web / browser / api / rss / json / document / dom / vision
+  - Lineage ID:
   - Date checked:
-  - Access state: public / degraded / blocked / login_required
+  - Access state: public / degraded / blocked / login_required / paid_private
   - Fact:
   - Link:
   - Caveat:
+
+## Source lineages
+
+- Independent lineages supporting the decision:
+- Copies, mirrors, or syndications collapsed:
+- Why the remaining lineages are independent:
+
+## Counterexample gate
+
+- Strongest contrary case:
+- Where counterexamples were sought:
+- Status: found / none_found / not_applicable
+- Effect on confidence or recommendation:
 
 ## Source reach
 
@@ -34,6 +50,11 @@
 - What the evidence means:
 - What remains uncertain:
 - What would change the answer:
+
+## Reproducibility
+
+- `research-run/v1` artifact: path / not needed
+- Validator result: PASS / FAIL / not run
 
 ## Recommendation
 

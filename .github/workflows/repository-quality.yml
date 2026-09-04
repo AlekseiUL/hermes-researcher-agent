@@ -30,6 +30,8 @@ jobs:
         run: |
           python scripts/test_github_traction_check.py
           python scripts/test_source_reach_doctor.py
+          python scripts/test_evidence_lineage_check.py
+          python tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
       - name: Validate skill frontmatter
         run: python scripts/validate_skill_frontmatter.py
       - name: Public distribution audit
