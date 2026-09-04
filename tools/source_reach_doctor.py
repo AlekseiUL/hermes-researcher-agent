@@ -144,14 +144,20 @@ def check_markitdown(
         checks.append(Check("MarkItDown document ingestion", "WARN", "not installed; local PDF/DOCX/PPTX-to-Markdown ingestion is unavailable"))
 
 
-def check_ytdlp(checks: list[Check], runner: Callable[[list[str], int], tuple[int, str]] = run) -> None:
-    if not command("yt-dlp"):
+def check_ytdlp(
+    checks: list[Check],
+    runner: Callable[[list[str], int], tuple[int, str]] = run,
+    finder: Callable[[str], Optional[str]] = command,
+) -> None:
+    binary = finder("yt-dlp")
+    if not binary:
         checks.append(Check("yt-dlp", "WARN", "not installed; YouTube metadata/transcript reach will be limited"))
         return
 
-    code, out = runner(["yt-dlp", "--version"], TIMEOUT)
+    base = [binary, "--ignore-config"]
+    code, out = runner([*base, "--version"], TIMEOUT)
     version = out.splitlines()[0] if out else "unknown"
-    code2, out2 = runner(["yt-dlp", "--no-warnings", "--dump-single-json", "--skip-download", YOUTUBE_SMOKE_URL], 70)
+    code2, out2 = runner([*base, "--no-warnings", "--dump-single-json", "--skip-download", YOUTUBE_SMOKE_URL], 70)
     if code2 == 0:
         try:
             data = json.loads(out2)
@@ -163,7 +169,7 @@ def check_ytdlp(checks: list[Check], runner: Callable[[list[str], int], tuple[in
 
     with tempfile.TemporaryDirectory(prefix="hermes-researcher-youtube-subs-") as tmp:
         code3, out3 = runner([
-            "yt-dlp",
+            *base,
             "--skip-download",
             "--write-subs",
             "--write-auto-subs",
@@ -197,7 +203,11 @@ def check_reddit_public_fallback(checks: list[Check], fetcher: Callable[[str, in
         checks.append(Check("Reddit public fallback", "WARN", f"public fallback degraded ({first_note}; Jina HTTP {jina_status})"))
 
 
-def check_deferred_tools(checks: list[Check], names: Iterable[str] = ("bird", "twitter", "rdt", "xhs", "bili", "mcporter")) -> None:
+def check_deferred_tools(
+    checks: list[Check],
+    names: Iterable[str] = ("bird", "twitter", "rdt", "xhs", "bili", "mcporter"),
+    finder: Callable[[str], Optional[str]] = command,
+) -> None:
     notes = {
         "bird": "X/Twitter tool may include read/write commands and cookie/session use",
         "twitter": "X/Twitter tooling usually requires account/session access",
@@ -207,9 +217,15 @@ def check_deferred_tools(checks: list[Check], names: Iterable[str] = ("bird", "t
         "mcporter": "MCP routing/registration changes local agent configuration",
     }
     for name in names:
-        path = command(name)
+        path = finder(name)
         if path:
-            checks.append(Check(name, "DEFER", f"present: {path}; {notes.get(name, 'approval-gated tool')}; not executed"))
+            checks.append(
+                Check(
+                    name,
+                    "DEFER",
+                    f"present in PATH; {notes.get(name, 'approval-gated tool')}; not executed",
+                )
+            )
         else:
             checks.append(Check(name, "DEFER", f"missing; {notes.get(name, 'approval-gated tool')}; install/use only after explicit approval"))
 

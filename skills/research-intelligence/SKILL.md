@@ -1,13 +1,13 @@
 ---
 name: research-intelligence
 description: Use when a Hermes agent must perform public-source research, source scouting, evidence grading, competitor/tool comparison, community-signal analysis, or decision-ready brief writing without private data or credentials.
-version: 1.3.0
+version: 1.4.0
 author: Aleksei Ulianov / Sprut_AI
 license: MIT
 metadata:
   hermes:
     tags: [research, public-source, evidence, osint-public, source-scouting, decision-briefs]
-    related_skills: []
+    related_skills: [youtube-research-pack]
 ---
 
 # Research Intelligence
@@ -110,6 +110,20 @@ Approval-gated:
 - Exa/API-key tools, paid APIs, trials, payments, MCP registration, or local agent config mutation.
 - Browser cookie/profile extraction.
 - Join/follow/like/comment/post/reply/DM or any other account action.
+
+## YouTube research
+
+Load `youtube-research-pack` when the task depends on YouTube search, channels,
+playlists, video metadata, subtitles, comments, visual framing, or a persistent
+YouTube radar. Use `tools/youtube_research.py` for bounded quick work. The
+optional public `youtube-intelligence-stack` companion is the deep collector;
+it is not installed or authenticated automatically.
+
+Keep metadata, transcripts, comments, visuals, and external corroboration as
+separate evidence layers. Missing subtitles or comments lower coverage but do
+not invalidate independently verified metadata. Public comments may contain
+personal identifiers: collect only when necessary and summarize themes without
+exporting author IDs or profile URLs.
 
 For brittle public/social surfaces, include this block in the final brief when relevant:
 

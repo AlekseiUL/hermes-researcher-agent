@@ -47,17 +47,50 @@ It is not a private OSINT kit, credentials bundle, login-wall scraper, or schedu
 - **Document ingestion** — includes a sanitized `markitdown-document-ingestion` skill for turning public PDFs, DOCX, PPTX, XLSX, HTML, CSV/JSON/XML, EPUB, and inspected trusted document bundles into Markdown before the evidence gate.
 - **Browser-aware workflow** — browser verification is recommended when live page state, comments, metrics, visuals, or login walls matter.
 - **Safe source-reach doctor** — checks Jina Reader, GitHub public API, Reddit public/Jina fallback, and optional `yt-dlp` metadata/subtitle reach without cookies or login.
+- **YouTube Research Pack** — bounded public search, video metadata, channel `videos`/`shorts`/`live` tabs, playlists, temporary transcript extraction, privacy-minimized comment samples, browser-verification rules, and an optional deep radar companion.
 - **Public Reddit fallback helper** — handles blocked Reddit JSON as degraded coverage and uses archive hits only as leads that require live verification.
 - **GitHub traction helper** — collects public repo metadata, releases, latest commit, topics, license, stars/forks/watchers, and caveats metrics as proxies rather than usage proof.
 - **Degraded-access reporting** — blocked, rate-limited, login-gated, or subtitle-missing sources are labeled as coverage gaps instead of hidden.
 - **Example outputs** — includes real example briefs and generated GitHub traction checks under `examples/`.
 - **Bilingual documentation** — English and Russian instructions in one README.
 
+## Source coverage at a glance
+
+The profile separates bundled collectors from capabilities supplied by the
+installer's Hermes toolsets. This keeps the product claim accurate: GitHub,
+Reddit fallback, evidence validation, source diagnostics, and bounded YouTube
+collection have repository helpers; broader web, browser, and visual research
+uses the corresponding Hermes tools when they are configured.
+
+- **Web and primary sources:** official sites, docs, pricing, changelogs,
+  releases, standards, regulators, papers, public datasets, RSS/Atom, public
+  APIs, and JSON endpoints.
+- **Software ecosystem:** public GitHub repositories, issues/discussions,
+  package registries such as npm and PyPI, Docker tags, model repositories,
+  licenses, releases, install paths, tests, and maintenance signals.
+- **YouTube:** search, video metadata, channel tabs, playlists, subtitles,
+  bounded comments, live browser checks, and optional persistent radar runs.
+- **Community evidence:** public Reddit plus fallbacks, Hacker News, GitHub
+  discussions, Stack Exchange, forums, public comments, and public social
+  pages or mirrors reachable without login.
+- **Documents:** public PDF, DOCX, PPTX, XLSX, HTML, CSV, JSON, XML, EPUB, and
+  inspected trusted bundles converted to Markdown analysis copies when useful.
+- **Live and visual evidence:** dynamic pages, dashboards, charts, screenshots,
+  thumbnails, visible metrics, UI state, and login-wall or blocked-state proof.
+- **Monitoring design:** watch scope, source classes, deduplication, freshness,
+  thresholds, storage boundaries, and stop rules. Scheduling remains disabled
+  until the user explicitly creates it.
+
 ## Installation
 
 ```bash
-hermes profile install github.com/AlekseiUL/hermes-researcher-agent --alias
+hermes profile install github.com/AlekseiUL/hermes-researcher-agent
+hermes profile show hermes-researcher-agent
+hermes -p hermes-researcher-agent setup
+hermes -p hermes-researcher-agent chat
 ```
+
+The distribution installs without API keys. Provider and optional search/browser credentials stay in your own local Hermes profile; do not paste them into chat or commit `.env`.
 
 For local testing from a clone:
 
@@ -127,17 +160,24 @@ Real examples included in this repo:
 - [`examples/github-traction-hermes-researcher-agent.md`](examples/github-traction-hermes-researcher-agent.md) — generated GitHub traction check for this repository.
 - [`examples/github-traction-nousresearch-hermes-agent.md`](examples/github-traction-nousresearch-hermes-agent.md) — generated GitHub traction check for the upstream Hermes Agent repository.
 
-Run the GitHub helper yourself. `GITHUB_TOKEN` is optional and used only for GitHub API rate limits; the helper never prints token values.
+Run the GitHub helper yourself. It is unauthenticated by default and refuses private repositories. If public API rate limits require authentication, opt in explicitly with `--token-env GITHUB_TOKEN`; the helper still rejects private visibility and never prints token values.
 
 ```bash
 python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+python3 tools/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
 ```
 
 Validate the included reproducible research run. It reports both page count and independent lineage count, so copied announcements cannot inflate the evidence:
 
 ```bash
 python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+```
+
+Use the Reddit fallback only for public, non-sensitive queries. The query is transmitted to Reddit and public archive endpoints; before network access, the CLI rejects email addresses, local paths, phone-like values, and common token shapes:
+
+```bash
+python3 tools/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
 ```
 
 Run the safe source-reach doctor before serious research. It is read-only: no cookies, no login, no social actions, no MCP registration.
@@ -153,6 +193,37 @@ Typical interpretation:
 - `PASS` — public-source reach is healthy.
 - `WARN` / `PASS_AFTER_FIX` — research can continue, but the report should label the degraded layer. Missing MarkItDown is a warning for document-heavy work, not a blocker for ordinary web research.
 - `DEFER` — a social/login/MCP path exists or is missing, but it is approval-gated, not a default setup task.
+- `BLOCKED` — required safe evidence paths are unavailable; the result is not ready to support the decision.
+
+### YouTube research
+
+The bundled lightweight helper ignores inherited `yt-dlp` configuration, so a
+user-level config cannot silently add cookies or account state:
+
+```bash
+python3 tools/youtube_research.py doctor --json
+python3 tools/youtube_research.py search "AI agents" --limit 5 --json
+python3 tools/youtube_research.py video "dQw4w9WgXcQ" --json
+python3 tools/youtube_research.py channel "https://www.youtube.com/@NousResearch" --tab videos --limit 10 --json
+python3 tools/youtube_research.py playlist "https://www.youtube.com/playlist?list=PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs" --limit 10 --json
+python3 tools/youtube_research.py transcript "dQw4w9WgXcQ" --languages "en.*,en,ru.*,ru" --json
+python3 tools/youtube_research.py comments "9GpWELm3_XI" --limit 10 --sort top --json
+```
+
+For persistent topic/channel watchlists, comments, metric snapshots, and
+Markdown reports, install the separately maintained public companion. It is
+optional and is never installed automatically:
+
+```bash
+uv tool install --python 3.10 "git+https://github.com/AlekseiUL/youtube-intelligence-stack.git@v0.4.3"
+youtube-intel doctor
+youtube-intel init ~/youtube-intel-demo --template general
+youtube-intel full ~/youtube-intel-demo --safe --query "AI agents" --limit-per-query 3 --skip-watchlist-channels
+```
+
+YouTube and `yt-dlp` may return partial coverage because of rate limits, region,
+removed videos, bot checks, age gates, missing subtitles, or unavailable
+comments. The pack reports these states instead of suggesting a bypass.
 
 ## Repository contents
 
@@ -167,6 +238,9 @@ Typical interpretation:
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
 - [`tools/evidence_lineage_check.py`](tools/evidence_lineage_check.py) — validates reproducible runs, independent source lineages, counterexamples, access state, and decision-relevant evidence.
+- [`tools/youtube_research.py`](tools/youtube_research.py) — bounded public YouTube search, video/channel/playlist inspection, temporary transcript extraction, and identity-minimized comment sampling.
+- [`skills/youtube-research-pack/SKILL.md`](skills/youtube-research-pack/SKILL.md) — evidence-aware YouTube workflows and privacy boundaries.
+- [`skills/youtube-research-pack/templates/youtube-research-brief.md`](skills/youtube-research-pack/templates/youtube-research-brief.md) — reusable YouTube research brief.
 - [`skills/research-intelligence/references/research-modes.md`](skills/research-intelligence/references/research-modes.md) — depth router and stop rules for six public-safe research modes.
 - [`examples/research-run-source-lineage.json`](examples/research-run-source-lineage.json) — runnable example where three pages collapse into one announcement lineage.
 - [`examples/`](examples/) — real example briefs and helper outputs.
@@ -196,9 +270,11 @@ The researcher profile is public-source by default. It should stop and ask befor
 
 ## Status / roadmap
 
-Current status: **v0.3.0 public distribution**.
+Current source-tree status: **v0.4.0 public distribution candidate**. The
+public GitHub `main` branch remains on v0.3.0 until this candidate is merged;
+the latest GitHub release tag is v0.2.2.
 
-v0.3.0 adds six bounded research modes, source-lineage deduplication, a counterexample gate, and a runnable validator for reproducible `research-run/v1` evidence artifacts. It does not add account access, enabled monitoring, private source lists, or autonomous external actions.
+v0.4.0 adds a public YouTube Research Pack with a bundled bounded helper and an optional deep companion. v0.3.1 hardened privacy and installation; v0.3.0 added six research modes, source-lineage deduplication, counterexamples, and reproducible evidence validation. The distribution does not add account access, enabled monitoring, private source lists, or autonomous external actions.
 
 Possible next improvements:
 
@@ -287,23 +363,58 @@ MIT. See [`LICENSE`](LICENSE).
 - **Режимы исследования** — до поиска выбирается quick fact, deep research, repo/tool, community pain, live/visual или monitoring design.
 - **Проверка происхождения источников** — зеркала и статьи, повторяющие один анонс, считаются одной линией доказательств, а не независимыми подтверждениями.
 - **Поиск контрпримеров** — для важного вывода агент ищет данные против него или честно фиксирует пробел.
-- **Воспроизводимый research-run** — публичный JSON-артефакт можно проверить валидатором до использования вывода.
+- **Воспроизводимый `research-run/v1`** — публичный JSON-артефакт можно проверить валидатором до использования вывода.
 - **Public-source boundary** — по умолчанию нет приватных данных, sessions, cookies, credentials и login-gated scraping.
 - **Research skill pack** — внутри `research-intelligence`: source ladders, шаблоны ответов, safety rules.
 - **Document ingestion** — внутри есть чистый `markitdown-document-ingestion` skill: публичные PDF, DOCX, PPTX, XLSX, HTML, CSV/JSON/XML, EPUB и проверенные trusted document bundles можно переводить в Markdown перед evidence gate.
 - **Browser-aware workflow** — browser verification нужен, когда важны live page state, comments, metrics, visuals или login walls.
 - **Safe source-reach doctor** — проверяет Jina Reader, GitHub public API, Reddit public/Jina fallback и optional `yt-dlp` metadata/subtitles без cookies и login.
+- **YouTube Research Pack** — ограниченный public-поиск, metadata ролика, вкладки канала `videos`/`shorts`/`live`, плейлисты, временное извлечение субтитров, обезличенная выборка комментариев, browser verification и optional deep-radar companion.
 - **Public Reddit fallback helper** — если Reddit JSON заблокирован, источник помечается как degraded, а archive hits считаются только leads для live-проверки.
 - **GitHub traction helper** — собирает public repo metadata, releases, latest commit, topics, license, stars/forks/watchers и честно помечает метрики как proxies, а не proof of usage.
 - **Degraded-access reporting** — blocked, rate-limited, login-gated или missing subtitles попадают в coverage gaps, а не прячутся.
 - **Example outputs** — реальные example briefs и generated GitHub traction checks лежат в `examples/`.
 - **Документация EN/RU** — английская и русская версии в одном README.
 
+## Какие источники поддерживаются
+
+Профиль отделяет встроенные collectors от возможностей, которые предоставляет
+локальная установка Hermes. Поэтому описание остаётся точным: для GitHub,
+Reddit fallback, проверки evidence, диагностики источников и ограниченного
+YouTube-сбора в репозитории есть собственные helpers. Более широкий web,
+browser и visual research использует соответствующие Hermes tools, если они
+настроены у пользователя.
+
+- **Web и первичные источники:** официальные сайты, docs, pricing, changelog,
+  releases, стандарты, регуляторы, papers, публичные датасеты, RSS/Atom,
+  публичные API и JSON endpoints.
+- **Экосистема разработки:** публичные GitHub-репозитории, issues/discussions,
+  npm, PyPI, Docker tags, model repositories, лицензии, релизы, установка,
+  тесты и признаки поддержки проекта.
+- **YouTube:** поиск, metadata видео, вкладки каналов, плейлисты, субтитры,
+  ограниченные комментарии, live browser checks и optional persistent radar.
+- **Community evidence:** публичный Reddit и fallbacks, Hacker News, GitHub
+  Discussions, Stack Exchange, форумы, открытые комментарии, публичные
+  социальные страницы и зеркала, доступные без login.
+- **Документы:** публичные PDF, DOCX, PPTX, XLSX, HTML, CSV, JSON, XML, EPUB и
+  проверенные trusted bundles с преобразованием в Markdown-копии для анализа.
+- **Live и visual evidence:** динамические страницы, dashboards, графики,
+  screenshots, thumbnails, видимые метрики, UI state и доказательство
+  блокировки или login wall.
+- **Проектирование мониторинга:** область наблюдения, классы источников,
+  дедупликация, свежесть, пороги изменений, хранение и stop rules. Расписание
+  остаётся выключенным, пока пользователь явно его не создаст.
+
 ## Установка
 
 ```bash
-hermes profile install github.com/AlekseiUL/hermes-researcher-agent --alias
+hermes profile install github.com/AlekseiUL/hermes-researcher-agent
+hermes profile show hermes-researcher-agent
+hermes -p hermes-researcher-agent setup
+hermes -p hermes-researcher-agent chat
 ```
+
+Дистрибутив устанавливается без API-ключей. Ключи провайдера и optional search/browser backends остаются только в вашем локальном Hermes-профиле: не вставляйте их в чат и не коммитьте `.env`.
 
 Локальный тест из clone:
 
@@ -373,17 +484,24 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 - [`examples/github-traction-hermes-researcher-agent.md`](examples/github-traction-hermes-researcher-agent.md) — generated GitHub traction check для этого repo.
 - [`examples/github-traction-nousresearch-hermes-agent.md`](examples/github-traction-nousresearch-hermes-agent.md) — generated GitHub traction check для upstream Hermes Agent repo.
 
-Запуск GitHub helper. `GITHUB_TOKEN` optional: он нужен только для GitHub API rate limits; helper не печатает token values.
+Запуск GitHub helper. По умолчанию он работает без авторизации и отказывается читать private-репозитории. Если для public API не хватает rate limit, токен включается явно через `--token-env GITHUB_TOKEN`; private visibility всё равно блокируется, значение токена не печатается.
 
 ```bash
 python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+python3 tools/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
 ```
 
 Проверка воспроизводимого research-run. В результате отдельно показаны количество страниц и количество независимых линий источников:
 
 ```bash
 python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+```
+
+Reddit fallback предназначен только для открытых, нечувствительных запросов. Запрос передаётся Reddit и публичным архивным endpoints; перед обращением к сети CLI блокирует email, локальные пути, похожие на телефон значения и распространённые форматы токенов:
+
+```bash
+python3 tools/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
 ```
 
 Перед серьёзным research можно прогнать safe source-reach doctor. Он read-only: без cookies, login, social actions и MCP registration.
@@ -399,6 +517,36 @@ python3 tools/source_reach_doctor.py --skip-youtube
 - `PASS` — public-source reach здоров.
 - `WARN` / `PASS_AFTER_FIX` — работать можно, но degraded layer надо честно отметить в отчёте. Если MarkItDown не установлен, это warning для document-heavy задач, а не блокер обычного web research.
 - `DEFER` — social/login/MCP путь существует или отсутствует, но это approval-gated, а не “нужно срочно поставить”.
+- `BLOCKED` — обязательные безопасные источники недоступны; результат пока нельзя использовать для решения.
+
+### YouTube research
+
+Встроенный helper принудительно игнорирует пользовательский конфиг `yt-dlp`,
+поэтому локальные cookies или account state не могут подключиться незаметно:
+
+```bash
+python3 tools/youtube_research.py doctor --json
+python3 tools/youtube_research.py search "AI agents" --limit 5 --json
+python3 tools/youtube_research.py video "dQw4w9WgXcQ" --json
+python3 tools/youtube_research.py channel "https://www.youtube.com/@NousResearch" --tab videos --limit 10 --json
+python3 tools/youtube_research.py playlist "https://www.youtube.com/playlist?list=PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs" --limit 10 --json
+python3 tools/youtube_research.py transcript "dQw4w9WgXcQ" --languages "en.*,en,ru.*,ru" --json
+python3 tools/youtube_research.py comments "9GpWELm3_XI" --limit 10 --sort top --json
+```
+
+Для постоянных topic/channel watchlists, comments, snapshots и Markdown reports
+есть отдельный публичный companion. Он optional и автоматически не ставится:
+
+```bash
+uv tool install --python 3.10 "git+https://github.com/AlekseiUL/youtube-intelligence-stack.git@v0.4.3"
+youtube-intel doctor
+youtube-intel init ~/youtube-intel-demo --template general
+youtube-intel full ~/youtube-intel-demo --safe --query "AI agents" --limit-per-query 3 --skip-watchlist-channels
+```
+
+YouTube и `yt-dlp` могут дать partial coverage из-за rate limit, региона,
+удалённого видео, bot check, age gate, отсутствующих субтитров или comments.
+Pack честно возвращает degraded state и не предлагает обход ограничений.
 
 ## Содержимое репозитория
 
@@ -413,6 +561,9 @@ python3 tools/source_reach_doctor.py --skip-youtube
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
 - [`tools/evidence_lineage_check.py`](tools/evidence_lineage_check.py) — проверяет research-run, независимость источников, контрпримеры, доступность и доказательства важных выводов.
+- [`tools/youtube_research.py`](tools/youtube_research.py) — ограниченный public YouTube search, проверка видео/каналов/плейлистов, временное извлечение субтитров и обезличенная выборка комментариев.
+- [`skills/youtube-research-pack/SKILL.md`](skills/youtube-research-pack/SKILL.md) — YouTube workflow, evidence gate и privacy boundaries.
+- [`skills/youtube-research-pack/templates/youtube-research-brief.md`](skills/youtube-research-pack/templates/youtube-research-brief.md) — шаблон YouTube research brief.
 - [`skills/research-intelligence/references/research-modes.md`](skills/research-intelligence/references/research-modes.md) — шесть безопасных режимов исследования и правила остановки.
 - [`examples/research-run-source-lineage.json`](examples/research-run-source-lineage.json) — запускаемый пример, где три страницы оказываются одним анонсом.
 - [`examples/`](examples/) — реальные example briefs и helper outputs.
@@ -442,9 +593,11 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущий статус: **v0.3.0 public distribution**.
+Текущий статус исходного дерева: **v0.4.0 public distribution candidate**.
+Публичная ветка GitHub `main` остаётся на v0.3.0 до merge этого кандидата;
+последний GitHub release tag - v0.2.2.
 
-В v0.3.0 добавлены шесть ограниченных режимов исследования, группировка копий по происхождению, обязательный поиск контрпримеров и запускаемый валидатор для воспроизводимых `research-run/v1` артефактов. Версия не добавляет доступ к аккаунтам, включённый мониторинг, приватные списки источников или автономные внешние действия.
+В v0.4.0 добавлен публичный YouTube Research Pack со встроенным ограниченным helper и optional deep companion. В v0.3.1 усилены приватность и установка; в v0.3.0 добавлены режимы исследования, группировка источников, контрпримеры и воспроизводимая проверка evidence. Дистрибутив не добавляет доступ к аккаунтам, включённый мониторинг, приватные списки источников или автономные внешние действия.
 
 Возможные следующие улучшения:
 

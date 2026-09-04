@@ -61,6 +61,32 @@ def main() -> int:
     )
     assert fallback_checks[0].status == "WARN"
 
+    youtube_calls = []
+
+    def youtube_runner(args, timeout):
+        youtube_calls.append(list(args))
+        if "--version" in args:
+            return 0, "2026.09.01"
+        if "--dump-single-json" in args:
+            return 0, json.dumps({"id": "dQw4w9WgXcQ"})
+        if "--write-subs" in args:
+            output_template = Path(args[args.index("-o") + 1])
+            subtitle = output_template.parent / "dQw4w9WgXcQ.en.vtt"
+            subtitle.write_text("WEBVTT\n", encoding="utf-8")
+            return 0, ""
+        return 1, "unexpected"
+
+    youtube_checks = []
+    module.check_ytdlp(
+        youtube_checks,
+        runner=youtube_runner,
+        finder=lambda name: "/usr/bin/yt-dlp" if name == "yt-dlp" else None,
+    )
+    assert [check.status for check in youtube_checks] == ["PASS", "PASS"]
+    assert youtube_calls
+    assert all("--ignore-config" in call for call in youtube_calls)
+    assert all("--cookies" not in call and "--cookies-from-browser" not in call for call in youtube_calls)
+
     text, code = module.verdict(checks)
     assert code == 0
     assert text.startswith("PASS")
@@ -70,7 +96,21 @@ def main() -> int:
     assert code == 0
     assert "PASS_AFTER_FIX" in text
 
-    redacted = module.redact("token=abc123456 secret: qwerty password=hidden Authorization: Bearer dont_print_me")
+    deferred = []
+    module.check_deferred_tools(
+        deferred,
+        names=("bird",),
+        finder=lambda name: "/" + "Users" + "/private-user/bin/bird",
+    )
+    assert deferred[0].status == "DEFER"
+    assert "present in PATH" in deferred[0].note
+    assert "/Users/" not in deferred[0].note
+    assert "private-user" not in deferred[0].note
+
+    redacted = module.redact(
+        "token=abc123456 secret: qwerty password=hidden "
+        "cookie=dont_print_me Authorization: Bearer ***"
+    )
     assert "abc123456" not in redacted
     assert "qwerty" not in redacted
     assert "hidden" not in redacted
