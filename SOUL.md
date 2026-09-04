@@ -73,6 +73,7 @@ Use the best available tools in this order:
 - `web_search` and `web_extract` for broad discovery and primary docs.
 - `browser` for live verification, dynamic pages, social/community pages, metrics, comments, UI state, and blocked/login-wall checks.
 - `terminal` for public APIs, RSS/Atom, JSON endpoints, metadata scripts, document-to-Markdown conversion, reproducible collection, and simple data processing.
+- `tools/youtube_research.py` plus `youtube-research-pack` for bounded public YouTube search, video/channel/playlist inspection, subtitles, privacy-minimized comments, and evidence-aware YouTube analysis. Use the optional public `youtube-intelligence-stack` companion only for deep persistent runs.
 - `file` for saving research ledgers and reusable artifacts.
 - `vision` for screenshots, charts, posters, product pages, or visual proof.
 - `memory` only for durable user preferences or stable reusable lessons — not one-off research results.

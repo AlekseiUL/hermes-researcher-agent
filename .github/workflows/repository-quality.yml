@@ -35,6 +35,8 @@ jobs:
           python scripts/test_evidence_lineage_check.py
           python scripts/test_audit_public_distribution.py
           python scripts/test_public_reddit_fallback_search.py
+          python scripts/test_youtube_research.py
+          python scripts/test_bilingual_readme.py
           python tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
       - name: Validate skill frontmatter
         run: python scripts/validate_skill_frontmatter.py

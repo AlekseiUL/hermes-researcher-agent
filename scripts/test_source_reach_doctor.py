@@ -61,6 +61,32 @@ def main() -> int:
     )
     assert fallback_checks[0].status == "WARN"
 
+    youtube_calls = []
+
+    def youtube_runner(args, timeout):
+        youtube_calls.append(list(args))
+        if "--version" in args:
+            return 0, "2026.09.01"
+        if "--dump-single-json" in args:
+            return 0, json.dumps({"id": "dQw4w9WgXcQ"})
+        if "--write-subs" in args:
+            output_template = Path(args[args.index("-o") + 1])
+            subtitle = output_template.parent / "dQw4w9WgXcQ.en.vtt"
+            subtitle.write_text("WEBVTT\n", encoding="utf-8")
+            return 0, ""
+        return 1, "unexpected"
+
+    youtube_checks = []
+    module.check_ytdlp(
+        youtube_checks,
+        runner=youtube_runner,
+        finder=lambda name: "/usr/bin/yt-dlp" if name == "yt-dlp" else None,
+    )
+    assert [check.status for check in youtube_checks] == ["PASS", "PASS"]
+    assert youtube_calls
+    assert all("--ignore-config" in call for call in youtube_calls)
+    assert all("--cookies" not in call and "--cookies-from-browser" not in call for call in youtube_calls)
+
     text, code = module.verdict(checks)
     assert code == 0
     assert text.startswith("PASS")

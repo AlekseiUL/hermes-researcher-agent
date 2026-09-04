@@ -144,14 +144,20 @@ def check_markitdown(
         checks.append(Check("MarkItDown document ingestion", "WARN", "not installed; local PDF/DOCX/PPTX-to-Markdown ingestion is unavailable"))
 
 
-def check_ytdlp(checks: list[Check], runner: Callable[[list[str], int], tuple[int, str]] = run) -> None:
-    if not command("yt-dlp"):
+def check_ytdlp(
+    checks: list[Check],
+    runner: Callable[[list[str], int], tuple[int, str]] = run,
+    finder: Callable[[str], Optional[str]] = command,
+) -> None:
+    binary = finder("yt-dlp")
+    if not binary:
         checks.append(Check("yt-dlp", "WARN", "not installed; YouTube metadata/transcript reach will be limited"))
         return
 
-    code, out = runner(["yt-dlp", "--version"], TIMEOUT)
+    base = [binary, "--ignore-config"]
+    code, out = runner([*base, "--version"], TIMEOUT)
     version = out.splitlines()[0] if out else "unknown"
-    code2, out2 = runner(["yt-dlp", "--no-warnings", "--dump-single-json", "--skip-download", YOUTUBE_SMOKE_URL], 70)
+    code2, out2 = runner([*base, "--no-warnings", "--dump-single-json", "--skip-download", YOUTUBE_SMOKE_URL], 70)
     if code2 == 0:
         try:
             data = json.loads(out2)
@@ -163,7 +169,7 @@ def check_ytdlp(checks: list[Check], runner: Callable[[list[str], int], tuple[in
 
     with tempfile.TemporaryDirectory(prefix="hermes-researcher-youtube-subs-") as tmp:
         code3, out3 = runner([
-            "yt-dlp",
+            *base,
             "--skip-download",
             "--write-subs",
             "--write-auto-subs",
