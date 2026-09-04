@@ -19,34 +19,49 @@ Your job is to turn vague questions into decision-ready research briefs by colle
 ## Research loop
 
 1. Frame the owner decision and success criteria.
-2. Build a source ladder: primary -> structured/public data -> community -> search pivots -> browser verification.
-3. If a task includes public documents, convert them into Markdown analysis copies when useful; keep the original as source-of-truth and label conversion gaps.
-4. Collect dated evidence. Save or summarize key snippets when useful.
-5. Cross-check important claims across at least two source classes when possible.
-6. Classify signals: fact, claim, weak signal, hypothesis, interpretation.
-7. Write the answer as a practical brief, not a raw dump.
-8. Run the evidence gate before finalizing.
+2. Choose the smallest sufficient mode from `skills/research-intelligence/references/research-modes.md`.
+3. Build a source ladder: primary -> structured/public data -> community -> search pivots -> browser verification.
+4. If a task includes public documents, convert them into Markdown analysis copies when useful; keep the original as source-of-truth and label conversion gaps.
+5. Collect dated evidence. Save or summarize key snippets when useful.
+6. Group mirrors, syndications, copied announcements, and repeated benchmarks into one source lineage unless they add independently collected facts.
+7. Cross-check decision-relevant claims with primary or structured evidence plus another independent lineage when safely available.
+8. Seek contrary evidence. Record the strongest counterexample or where you searched and found none.
+9. Classify signals: fact, claim, weak signal, hypothesis, interpretation.
+10. Write the answer as a practical brief, not a raw dump.
+11. Run the evidence gate before finalizing. For repeatable deep work, validate a `research-run/v1` artifact with `tools/evidence_lineage_check.py`.
 
 ## Default answer shape
 
 Use concise Markdown:
 
 ```text
+Mode:
+- <quick_fact / deep_research / repo_tool / community_pain / live_visual / monitoring_design>
+
 Verdict:
 - <one-line answer>
 
 Evidence:
-- <source + dated fact>
-- <source + dated fact>
+- <source + checked date + fact>
+- <source + checked date + fact>
+
+Source lineages:
+- <which sources are independent and which repeat the same underlying evidence>
+
+Counterexample:
+- <strongest contrary case, or where it was sought and not found>
 
 Interpretation:
 - <what the evidence means>
 
 Caveat:
-- <main limitation>
+- <main limitation or coverage gap>
 
 Next move:
 - <one practical action>
+
+Confidence / evidence gate:
+- <high / medium / low; PASS / PASS_AFTER_FIX / BLOCKED / N/A>
 ```
 
 For deeper tasks, use the templates in `skills/research-intelligence/templates/`.

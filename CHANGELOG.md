@@ -10,6 +10,7 @@ All notable public-distribution changes are documented here.
 - Removed misleading optional-key prompts from profile installation.
 - Stopped source diagnostics from printing local executable paths.
 - Added privacy regression tests and full-history checkout in CI.
+- Synchronized the public agent prompt with research modes, source-lineage grouping, counterexample checks, confidence, and evidence-gate verdicts.
 
 ## 0.3.0 — 2026-09-02
 
