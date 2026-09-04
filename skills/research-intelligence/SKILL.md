@@ -1,7 +1,7 @@
 ---
 name: research-intelligence
 description: Use when a Hermes agent must perform public-source research, source scouting, evidence grading, competitor/tool comparison, community-signal analysis, or decision-ready brief writing without private data or credentials.
-version: 1.2.0
+version: 1.3.0
 author: Aleksei Ulianov / Sprut_AI
 license: MIT
 metadata:
@@ -41,14 +41,43 @@ Do not use for:
 ## Core Research Loop
 
 1. **Frame the decision.** Name the user decision: adopt, buy, compare, reject, watch, implement, contact, investigate, or hand off.
-2. **Build the source ladder.** Pick source classes before searching.
-3. **Ingest documents when needed.** For public PDFs, DOCX, PPTX, spreadsheets, HTML, EPUB, or inspected trusted document bundles, create a Markdown analysis copy with `markitdown-document-ingestion` before summarizing.
-4. **Collect dated facts.** Include timestamps for volatile data like stars, downloads, prices, package versions, and community metrics.
-5. **Triangulate important claims.** Corroborate technical/product claims with primary sources when possible.
-6. **Classify signal strength.** Use fact / claim / weak signal / hypothesis / interpretation.
-7. **Browser-check the shortlist.** Use a real browser for dynamic/social/visual pages when live state matters.
-8. **Run the evidence gate.** Fix gaps or label limitations before final answer.
-9. **Return the next move.** A good brief ends with a practical action.
+2. **Choose the mode.** Use `references/research-modes.md` to select `quick_fact`, `deep_research`, `repo_tool`, `community_pain`, `live_visual`, or `monitoring_design`.
+3. **Build the source ladder.** Pick source classes before searching.
+4. **Ingest documents when needed.** For public PDFs, DOCX, PPTX, spreadsheets, HTML, EPUB, or inspected trusted document bundles, create a Markdown analysis copy with `markitdown-document-ingestion` before summarizing.
+5. **Collect dated facts.** Include timestamps for volatile data like stars, downloads, prices, package versions, and community metrics.
+6. **Group source lineages.** Copies, syndications, mirrors, and posts repeating one announcement count as one evidence lineage until independent reporting or data is shown.
+7. **Triangulate important claims.** Decision-relevant claims need primary or structured evidence plus another independent lineage when safely available.
+8. **Seek a counterexample.** Check failure terms, negative cases, limitations, and evidence that could change the decision.
+9. **Classify signal strength.** Use fact / claim / weak signal / hypothesis / interpretation.
+10. **Browser-check the shortlist.** Use a real browser, DOM extraction, or vision for dynamic/social/visual pages when live state matters.
+11. **Run the evidence gate.** Fix gaps or label limitations before final answer.
+12. **Return the next move.** A good brief ends with a practical action.
+
+## Mode Router
+
+Choose the smallest sufficient research mode before collecting sources. A one-fact check must not grow into a deep report, while a consequential or disputed decision must not be answered from snippets. The full mode contract and stop rules live in `references/research-modes.md`.
+
+## Source Lineage and Counterexamples
+
+Source count is not evidence count. Treat these as one lineage unless they add independently collected facts:
+
+- articles copying the same press release;
+- mirrors and syndicated posts;
+- social posts linking the same announcement;
+- multiple pages citing one benchmark without new measurements.
+
+For every decision-relevant claim:
+
+1. identify the primary or structured source;
+2. identify another independent lineage when safely available;
+3. look for a concrete counterexample or record where you searched and found none;
+4. lower confidence when access gaps prevent that check.
+
+Use `tools/evidence_lineage_check.py` with a `research-run/v1` JSON artifact when a deep result must be repeatable or independently reviewed.
+
+```bash
+python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+```
 
 ## Source Ladder
 
@@ -137,6 +166,9 @@ Before finalizing, answer:
 - What decision does this research support?
 - Which source classes were checked?
 - Which sources are primary or high-signal?
+- How many independent source lineages support the decision?
+- Did copied announcements or mirrors get collapsed into one lineage?
+- What is the strongest counterexample, or where was it sought?
 - What is fact vs interpretation?
 - Is the data fresh enough?
 - What is the main caveat?
@@ -161,6 +193,12 @@ Verdict:
 Evidence:
 - <source/date/fact>
 - <source/date/fact>
+
+Source lineages:
+- <which pages belong to the same underlying source>
+
+Counterexample:
+- <strongest contrary case, or where it was sought>
 
 Interpretation:
 - <what it means>
@@ -211,12 +249,17 @@ Forbidden:
 6. **Over-searching after enough evidence.** Stop when the decision is supported and caveated.
 7. **No next move.** Research should end with an action, not just information.
 8. **Private data creep.** Do not import local memories, sessions, customer notes, or owner-specific source lists into public research.
+9. **Source-count inflation.** Five copies of one announcement are one evidence lineage.
+10. **Confirmation-only research.** A decision-relevant claim needs a counterexample search or an explicit explanation of why it is not applicable.
 
 ## Verification Checklist
 
 - [ ] Decision frame is explicit.
 - [ ] Source ladder was chosen before collection.
 - [ ] Primary/high-signal sources were checked where possible.
+- [ ] Copies and syndications were grouped by source lineage.
+- [ ] Decision-relevant claims use independent lineages rather than page count.
+- [ ] A counterexample was found or the unsuccessful search was recorded.
 - [ ] Facts, claims, weak signals, hypotheses, and interpretation are separated.
 - [ ] Volatile metrics include date/time.
 - [ ] Browser verification was used when live state mattered.

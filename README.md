@@ -38,6 +38,10 @@ It is not a private OSINT kit, credentials bundle, login-wall scraper, or schedu
 
 - **Hermes profile distribution** — install the whole profile from GitHub with one command.
 - **Evidence gate** — every serious answer checks source quality, freshness, caveats, and next move.
+- **Research mode router** — chooses quick fact, deep research, repo/tool, community-pain, live/visual, or monitoring-design depth before collection.
+- **Source-lineage checks** — mirrors and articles repeating one announcement count as one evidence lineage, not independent proof.
+- **Counterexample gate** — decision-relevant claims must seek contrary evidence or record the coverage gap.
+- **Reproducible research runs** — a public-safe `research-run/v1` artifact can be validated before a brief is trusted.
 - **Public-source boundary** — no private data, sessions, cookies, credentials, or login-gated scraping by default.
 - **Research skill pack** — includes `research-intelligence` with source ladders, output templates, and safety rules.
 - **Document ingestion** — includes a sanitized `markitdown-document-ingestion` skill for turning public PDFs, DOCX, PPTX, XLSX, HTML, CSV/JSON/XML, EPUB, and inspected trusted document bundles into Markdown before the evidence gate.
@@ -112,7 +116,7 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 ## Example workflow
 
 ```text
-Question -> Decision frame -> Source ladder -> Evidence collection -> Browser verification -> Evidence gate -> Decision-ready brief
+Question -> Decision frame -> Mode -> Source ladder -> Evidence collection -> Lineage grouping -> Counterexample search -> Browser verification -> Evidence gate -> Decision-ready brief
 ```
 
 ## Example outputs
@@ -128,6 +132,12 @@ Run the GitHub helper yourself. `GITHUB_TOKEN` is optional and used only for Git
 ```bash
 python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+```
+
+Validate the included reproducible research run. It reports both page count and independent lineage count, so copied announcements cannot inflate the evidence:
+
+```bash
+python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
 ```
 
 Run the safe source-reach doctor before serious research. It is read-only: no cookies, no login, no social actions, no MCP registration.
@@ -156,6 +166,9 @@ Typical interpretation:
 - [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — safe public-source reach diagnostics: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke, and approval-gated social/MCP detection.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
+- [`tools/evidence_lineage_check.py`](tools/evidence_lineage_check.py) — validates reproducible runs, independent source lineages, counterexamples, access state, and decision-relevant evidence.
+- [`skills/research-intelligence/references/research-modes.md`](skills/research-intelligence/references/research-modes.md) — depth router and stop rules for six public-safe research modes.
+- [`examples/research-run-source-lineage.json`](examples/research-run-source-lineage.json) — runnable example where three pages collapse into one announcement lineage.
 - [`examples/`](examples/) — real example briefs and helper outputs.
 - [`docs/assets/researcher-agent-cover.jpg`](docs/assets/researcher-agent-cover.jpg) — repository cover / agent poster.
 - [`.env.EXAMPLE`](.env.EXAMPLE) — optional environment variable names only; no secrets.
@@ -163,6 +176,7 @@ Typical interpretation:
 - [`NOTICE.md`](NOTICE.md) — canonical source and attribution.
 - [`SECURITY.md`](SECURITY.md) — safety and security policy.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — contribution rules.
+- [`CHANGELOG.md`](CHANGELOG.md) — versioned release notes.
 
 ## Safety, privacy, and non-goals
 
@@ -182,9 +196,9 @@ The researcher profile is public-source by default. It should stop and ask befor
 
 ## Status / roadmap
 
-Current status: **v0.2.3 public distribution**.
+Current status: **v0.3.0 public distribution**.
 
-v0.2.3 adds safe document-ingestion guidance for converting public research files into Markdown before evidence review, plus optional MarkItDown detection in the source-reach doctor. v0.2.2 added the safe source-reach doctor and degraded-access rules for YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback, and approval-gated social/MCP tools.
+v0.3.0 adds six bounded research modes, source-lineage deduplication, a counterexample gate, and a runnable validator for reproducible `research-run/v1` evidence artifacts. It does not add account access, enabled monitoring, private source lists, or autonomous external actions.
 
 Possible next improvements:
 
@@ -270,6 +284,10 @@ MIT. See [`LICENSE`](LICENSE).
 
 - **Hermes profile distribution** — весь профиль ставится из GitHub одной командой.
 - **Evidence gate** — серьёзный ответ проверяет качество источников, свежесть, caveats и следующий шаг.
+- **Режимы исследования** — до поиска выбирается quick fact, deep research, repo/tool, community pain, live/visual или monitoring design.
+- **Проверка происхождения источников** — зеркала и статьи, повторяющие один анонс, считаются одной линией доказательств, а не независимыми подтверждениями.
+- **Поиск контрпримеров** — для важного вывода агент ищет данные против него или честно фиксирует пробел.
+- **Воспроизводимый research-run** — публичный JSON-артефакт можно проверить валидатором до использования вывода.
 - **Public-source boundary** — по умолчанию нет приватных данных, sessions, cookies, credentials и login-gated scraping.
 - **Research skill pack** — внутри `research-intelligence`: source ladders, шаблоны ответов, safety rules.
 - **Document ingestion** — внутри есть чистый `markitdown-document-ingestion` skill: публичные PDF, DOCX, PPTX, XLSX, HTML, CSV/JSON/XML, EPUB и проверенные trusted document bundles можно переводить в Markdown перед evidence gate.
@@ -344,7 +362,7 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 ## Пример процесса
 
 ```text
-Вопрос -> Decision frame -> Source ladder -> Evidence collection -> Browser verification -> Evidence gate -> Decision-ready brief
+Вопрос -> Decision frame -> Режим -> Source ladder -> Evidence collection -> Группировка по происхождению -> Поиск контрпримеров -> Browser verification -> Evidence gate -> Decision-ready brief
 ```
 
 ## Примеры output
@@ -360,6 +378,12 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 ```bash
 python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
 python3 tools/github_traction_check.py NousResearch/hermes-agent --json
+```
+
+Проверка воспроизводимого research-run. В результате отдельно показаны количество страниц и количество независимых линий источников:
+
+```bash
+python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
 ```
 
 Перед серьёзным research можно прогнать safe source-reach doctor. Он read-only: без cookies, login, social actions и MCP registration.
@@ -388,6 +412,9 @@ python3 tools/source_reach_doctor.py --skip-youtube
 - [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — безопасная диагностика public-source reach: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke и detection approval-gated social/MCP tools.
 - [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
 - [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
+- [`tools/evidence_lineage_check.py`](tools/evidence_lineage_check.py) — проверяет research-run, независимость источников, контрпримеры, доступность и доказательства важных выводов.
+- [`skills/research-intelligence/references/research-modes.md`](skills/research-intelligence/references/research-modes.md) — шесть безопасных режимов исследования и правила остановки.
+- [`examples/research-run-source-lineage.json`](examples/research-run-source-lineage.json) — запускаемый пример, где три страницы оказываются одним анонсом.
 - [`examples/`](examples/) — реальные example briefs и helper outputs.
 - [`docs/assets/researcher-agent-cover.jpg`](docs/assets/researcher-agent-cover.jpg) — обложка / постер агента.
 - [`.env.EXAMPLE`](.env.EXAMPLE) — только имена optional env vars, без секретов.
@@ -395,6 +422,7 @@ python3 tools/source_reach_doctor.py --skip-youtube
 - [`NOTICE.md`](NOTICE.md) — canonical source и attribution.
 - [`SECURITY.md`](SECURITY.md) — security/safety policy.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — правила contribution.
+- [`CHANGELOG.md`](CHANGELOG.md) — история версий.
 
 ## Безопасность, приватность и non-goals
 
@@ -414,9 +442,9 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущий статус: **v0.2.3 public distribution**.
+Текущий статус: **v0.3.0 public distribution**.
 
-В v0.2.3 добавлен безопасный document-ingestion слой: публичные research-файлы можно переводить в Markdown перед evidence review, а source-reach doctor теперь отдельно показывает, доступен ли MarkItDown. В v0.2.2 был добавлен safe source-reach doctor и degraded-access rules для YouTube subtitles, GitHub public API rate limits, Reddit public/Jina fallback и approval-gated social/MCP tools.
+В v0.3.0 добавлены шесть ограниченных режимов исследования, группировка копий по происхождению, обязательный поиск контрпримеров и запускаемый валидатор для воспроизводимых `research-run/v1` артефактов. Версия не добавляет доступ к аккаунтам, включённый мониторинг, приватные списки источников или автономные внешние действия.
 
 Возможные следующие улучшения:
 
