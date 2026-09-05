@@ -12,6 +12,11 @@ If the issue involves secrets, credentials, private data, or an exploit path, do
 
 For non-sensitive bugs, open a GitHub issue with a minimal reproduction.
 
+Generic scanner reports should include the scanned commit SHA, scanner and
+rule-set versions, rule definition, and a reproducible control/data-flow trace.
+See [`SECURITY-SCANNER-NOTES.md`](SECURITY-SCANNER-NOTES.md) for the current
+triage and the privacy-minimized operation-audit contract.
+
 For issues in Hermes Agent itself, report them to the upstream Hermes Agent project.
 
 ## Safety boundaries

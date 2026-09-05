@@ -2,6 +2,12 @@
 
 All notable public-distribution changes are documented here.
 
+## Unreleased
+
+- Added privacy-minimized `operation-audit/v1` JSONL events for the public-distribution audit and opt-in YouTube subprocess auditing.
+- Added regression coverage proving that YouTube audit events omit queries and command arguments.
+- Documented the reviewed `AT-001`, `AUD-003`, and `LOG-001` scanner findings, narrow-suppression policy, and reproduction requirements.
+
 ## 0.4.0 — 2026-09-04
 
 - Added the public `youtube-research-pack` skill with search, video, channel, playlist, transcript, bounded-comment, and deep-radar workflows.

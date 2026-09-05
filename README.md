@@ -249,6 +249,7 @@ comments. The pack reports these states instead of suggesting a bypass.
 - [`LICENSE`](LICENSE) — MIT license.
 - [`NOTICE.md`](NOTICE.md) — canonical source and attribution.
 - [`SECURITY.md`](SECURITY.md) — safety and security policy.
+- [`SECURITY-SCANNER-NOTES.md`](SECURITY-SCANNER-NOTES.md) — reviewed scanner findings and the privacy-minimized operation-audit contract.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — contribution rules.
 - [`CHANGELOG.md`](CHANGELOG.md) — versioned release notes.
 
@@ -267,6 +268,8 @@ This repository intentionally does **not** include:
 - owner-specific research outputs.
 
 The researcher profile is public-source by default. It should stop and ask before any action that requires login, signup, payment, joining a group, posting, DMing, following, private exports, or account sessions.
+
+For auditable YouTube subprocess execution without recording queries, targets, command arguments, or collected content, add `--audit`; structured `operation-audit/v1` events are written to `stderr`. See [`SECURITY-SCANNER-NOTES.md`](SECURITY-SCANNER-NOTES.md).
 
 ## Status / roadmap
 
@@ -570,6 +573,7 @@ Pack честно возвращает degraded state и не предлагае
 - [`LICENSE`](LICENSE) — MIT license.
 - [`NOTICE.md`](NOTICE.md) — canonical source и attribution.
 - [`SECURITY.md`](SECURITY.md) — security/safety policy.
+- [`SECURITY-SCANNER-NOTES.md`](SECURITY-SCANNER-NOTES.md) — разбор scanner findings и privacy-minimized контракт операционного аудита.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — правила contribution.
 - [`CHANGELOG.md`](CHANGELOG.md) — история версий.
 
@@ -588,6 +592,8 @@ Pack честно возвращает degraded state и не предлагае
 - owner-specific research outputs.
 
 Researcher-профиль по умолчанию работает только с открытыми источниками. Он должен остановиться и спросить подтверждение перед login, signup, payment, joining a group, posting, DM, following, private exports или account sessions.
+
+Для проверяемого запуска YouTube subprocess без записи запросов, целей, аргументов команд и собранного контента добавьте `--audit`; структурированные события `operation-audit/v1` выводятся в `stderr`. Подробности — в [`SECURITY-SCANNER-NOTES.md`](SECURITY-SCANNER-NOTES.md).
 
 ## Статус / roadmap
 

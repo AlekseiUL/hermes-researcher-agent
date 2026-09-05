@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import sys
+from contextlib import redirect_stderr
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,6 +42,19 @@ def main() -> int:
 
     binary = b"\xff\xd8\xff" + b"\x00" * 30 + github_token.encode("ascii")
     assert "github_token" in {finding[0] for finding in module.scan_bytes(binary, "image.jpg")}
+
+    stderr = io.StringIO()
+    with redirect_stderr(stderr):
+        module.audit_event("completed", outcome="success", finding_count=0)
+    event = json.loads(stderr.getvalue())
+    assert event == {
+        "component": "public_distribution_audit",
+        "finding_count": 0,
+        "operation": "public_distribution_scan",
+        "outcome": "success",
+        "phase": "completed",
+        "schema_version": "operation-audit/v1",
+    }
 
     print(json.dumps({"ok": True, "tested": "audit_public_distribution"}))
     return 0
