@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import subprocess
 import tempfile
+from contextlib import redirect_stderr
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -136,6 +138,20 @@ def test_error_classification_suppresses_raw_stderr() -> None:
     assert "super-secret-value" not in json.dumps(result)
     assert mod.classify_error("Sign in to confirm you're not a bot") == "bot_check"
     assert mod.classify_error("requested subtitles are not available") == "no_subtitles"
+
+
+def test_audit_events_are_structured_and_minimized() -> None:
+    runner = Recorder(json.dumps({"entries": []}))
+    stderr = io.StringIO()
+    with redirect_stderr(stderr):
+        mod.search("sensitive research topic", 1, runner=runner, audit=True)
+    events = [json.loads(line) for line in stderr.getvalue().splitlines()]
+    assert [event["phase"] for event in events] == ["started", "completed"]
+    assert all(event["schema_version"] == "operation-audit/v1" for event in events)
+    serialized = json.dumps(events)
+    assert "sensitive research topic" not in serialized
+    assert "ytsearch" not in serialized
+    assert events[-1]["returncode"] == 0
 
 
 def test_vtt_cleanup_and_cap() -> None:

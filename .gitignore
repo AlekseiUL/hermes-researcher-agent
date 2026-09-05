@@ -25,3 +25,4 @@ __pycache__/
 .DS_Store
 output/
 reports/private/
+operation-audit*.jsonl

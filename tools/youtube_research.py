@@ -46,6 +46,18 @@ ERROR_PATTERNS = [
 Runner = Callable[..., subprocess.CompletedProcess[str]]
 
 
+def emit_audit_event(operation: str, phase: str, **details: Any) -> None:
+    """Emit a privacy-minimized operation event as JSONL on stderr."""
+    event = {
+        "schema_version": "operation-audit/v1",
+        "component": "youtube_research",
+        "operation": operation,
+        "phase": phase,
+        **details,
+    }
+    print(json.dumps(event, ensure_ascii=False, sort_keys=True), file=sys.stderr)
+
+
 def reject_sensitive_query(value: str) -> str:
     value = " ".join(value.strip().split())
     if not value:
@@ -137,13 +149,39 @@ def safe_error_note(text: str) -> str:
     return f"yt-dlp returned {state}; coverage is degraded"
 
 
-def _run(args: list[str], timeout: int, runner: Runner = subprocess.run) -> subprocess.CompletedProcess[str]:
+def _run(
+    args: list[str],
+    timeout: int,
+    runner: Runner = subprocess.run,
+    *,
+    operation: str,
+    audit: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    if audit:
+        emit_audit_event(operation, "started", timeout_seconds=timeout)
     try:
-        return runner(args, capture_output=True, text=True, errors="replace", timeout=timeout, check=False)
+        result = runner(
+            args,
+            capture_output=True,
+            text=True,
+            errors="replace",
+            timeout=timeout,
+            check=False,
+        )
     except subprocess.TimeoutExpired:
-        return subprocess.CompletedProcess(args, 124, "", "timeout")
+        result = subprocess.CompletedProcess(args, 124, "", "timeout")
     except FileNotFoundError:
-        return subprocess.CompletedProcess(args, 127, "", "yt-dlp missing")
+        result = subprocess.CompletedProcess(args, 127, "", "yt-dlp missing")
+    if audit:
+        emit_audit_event(
+            operation,
+            "completed",
+            outcome="success" if result.returncode == 0 else classify_error(
+                result.stderr or result.stdout, result.returncode
+            ),
+            returncode=result.returncode,
+        )
+    return result
 
 
 def _base_command(binary: str) -> list[str]:
@@ -188,12 +226,14 @@ def _parse_payload(proc: subprocess.CompletedProcess[str]) -> tuple[dict[str, An
         return None, {"status": "parse_error", "note": "yt-dlp returned invalid JSON; coverage is degraded"}
 
 
-def search(query: str, limit: int, timeout: int = DEFAULT_TIMEOUT, runner: Runner = subprocess.run, binary: str = "yt-dlp") -> dict[str, Any]:
+def search(query: str, limit: int, timeout: int = DEFAULT_TIMEOUT, runner: Runner = subprocess.run, binary: str = "yt-dlp", audit: bool = False) -> dict[str, Any]:
     query = reject_sensitive_query(query)
     limit = bounded_limit(limit)
     timeout = bounded_timeout(timeout)
     command = [*_base_command(binary), "--dump-single-json", "--playlist-end", str(limit), f"ytsearch{limit}:{query}"]
-    payload, error = _parse_payload(_run(command, timeout, runner))
+    payload, error = _parse_payload(
+        _run(command, timeout, runner, operation="youtube_search", audit=audit)
+    )
     if error:
         return {"schema_version": "youtube-research/v1", "mode": "search", "status": error["status"], "query": query, "entries": [], "coverage": error["note"]}
     entries = [_public_video(item) for item in (payload or {}).get("entries") or []][:limit]
@@ -209,22 +249,26 @@ def search(query: str, limit: int, timeout: int = DEFAULT_TIMEOUT, runner: Runne
     }
 
 
-def inspect_video(target: str, timeout: int = DEFAULT_TIMEOUT, runner: Runner = subprocess.run, binary: str = "yt-dlp") -> dict[str, Any]:
+def inspect_video(target: str, timeout: int = DEFAULT_TIMEOUT, runner: Runner = subprocess.run, binary: str = "yt-dlp", audit: bool = False) -> dict[str, Any]:
     url = video_url(target)
     timeout = bounded_timeout(timeout)
     command = [*_base_command(binary), "--no-playlist", "--dump-single-json", url]
-    payload, error = _parse_payload(_run(command, timeout, runner))
+    payload, error = _parse_payload(
+        _run(command, timeout, runner, operation="youtube_video", audit=audit)
+    )
     if error:
         return {"schema_version": "youtube-research/v1", "mode": "video", "status": error["status"], "target": url, "coverage": error["note"]}
     return {"schema_version": "youtube-research/v1", "mode": "video", "status": "ok", "video": _public_video(payload or {}), "coverage": "public metadata; creator-side analytics are unavailable"}
 
 
-def inspect_collection(target: str, limit: int, tab: str | None = None, timeout: int = DEFAULT_TIMEOUT, runner: Runner = subprocess.run, binary: str = "yt-dlp") -> dict[str, Any]:
+def inspect_collection(target: str, limit: int, tab: str | None = None, timeout: int = DEFAULT_TIMEOUT, runner: Runner = subprocess.run, binary: str = "yt-dlp", audit: bool = False) -> dict[str, Any]:
     limit = bounded_limit(limit)
     timeout = bounded_timeout(timeout)
     url = collection_url(target, tab)
     command = [*_base_command(binary), "--flat-playlist", "--playlist-end", str(limit), "--dump-single-json", url]
-    payload, error = _parse_payload(_run(command, timeout, runner))
+    payload, error = _parse_payload(
+        _run(command, timeout, runner, operation="youtube_collection", audit=audit)
+    )
     if error:
         return {"schema_version": "youtube-research/v1", "mode": "collection", "status": error["status"], "target": url, "entries": [], "coverage": error["note"]}
     entries = [_public_video(item) for item in (payload or {}).get("entries") or []][:limit]
@@ -260,7 +304,7 @@ def _vtt_text(raw: str) -> str:
     return "\n".join(lines)[:MAX_TRANSCRIPT_CHARS]
 
 
-def transcript(target: str, languages: str, timeout: int = 90, runner: Runner = subprocess.run, binary: str = "yt-dlp") -> dict[str, Any]:
+def transcript(target: str, languages: str, timeout: int = 90, runner: Runner = subprocess.run, binary: str = "yt-dlp", audit: bool = False) -> dict[str, Any]:
     url = video_url(target)
     timeout = bounded_timeout(timeout)
     if not LANGS.fullmatch(languages):
@@ -277,7 +321,7 @@ def transcript(target: str, languages: str, timeout: int = 90, runner: Runner = 
             "-o", template,
             url,
         ]
-        proc = _run(command, timeout, runner)
+        proc = _run(command, timeout, runner, operation="youtube_transcript", audit=audit)
         files = sorted(Path(temp).glob("*.vtt"))
         if not files:
             state = classify_error(proc.stderr or proc.stdout, proc.returncode)
@@ -297,7 +341,7 @@ def transcript(target: str, languages: str, timeout: int = 90, runner: Runner = 
         }
 
 
-def comments(target: str, limit: int, sort: str = "top", timeout: int = 60, runner: Runner = subprocess.run, binary: str = "yt-dlp") -> dict[str, Any]:
+def comments(target: str, limit: int, sort: str = "top", timeout: int = 60, runner: Runner = subprocess.run, binary: str = "yt-dlp", audit: bool = False) -> dict[str, Any]:
     url = video_url(target)
     if not 1 <= limit <= 50:
         raise ValueError("comment limit must be between 1 and 50")
@@ -316,7 +360,7 @@ def comments(target: str, limit: int, sort: str = "top", timeout: int = 60, runn
             "-o", template,
             url,
         ]
-        proc = _run(command, timeout, runner)
+        proc = _run(command, timeout, runner, operation="youtube_comments", audit=audit)
         files = sorted(Path(temp).glob("*.info.json"))
         if not files:
             state = classify_error(proc.stderr or proc.stdout, proc.returncode)
@@ -347,17 +391,29 @@ def comments(target: str, limit: int, sort: str = "top", timeout: int = 60, runn
         }
 
 
-def doctor(binary: str = "yt-dlp", runner: Runner = subprocess.run) -> dict[str, Any]:
+def doctor(binary: str = "yt-dlp", runner: Runner = subprocess.run, audit: bool = False) -> dict[str, Any]:
     resolved = shutil.which(binary)
     checks: list[dict[str, str]] = []
     if resolved:
-        proc = _run([resolved, "--ignore-config", "--version"], 20, runner)
+        proc = _run(
+            [resolved, "--ignore-config", "--version"],
+            20,
+            runner,
+            operation="yt_dlp_version_check",
+            audit=audit,
+        )
         checks.append({"name": "yt-dlp", "status": "pass" if proc.returncode == 0 else "warn", "note": (proc.stdout.strip().splitlines() or ["version unavailable"])[0]})
     else:
         checks.append({"name": "yt-dlp", "status": "warn", "note": "missing; install yt-dlp for the lightweight lane"})
     companion = shutil.which("youtube-intel")
     if companion:
-        proc = _run([companion, "--version"], 20, runner)
+        proc = _run(
+            [companion, "--version"],
+            20,
+            runner,
+            operation="youtube_intel_version_check",
+            audit=audit,
+        )
         checks.append({"name": "youtube-intelligence-stack", "status": "pass" if proc.returncode == 0 else "warn", "note": (proc.stdout.strip().splitlines() or ["version unavailable"])[0]})
     else:
         checks.append({"name": "youtube-intelligence-stack", "status": "optional", "note": "missing; install the companion CLI only for deep persistent runs"})
@@ -394,6 +450,11 @@ def parser() -> argparse.ArgumentParser:
     for name in ("doctor", "search", "video", "channel", "playlist", "transcript", "comments"):
         p = sub.add_parser(name)
         p.add_argument("--json", action="store_true")
+        p.add_argument(
+            "--audit",
+            action="store_true",
+            help="emit privacy-minimized operation events as JSONL on stderr",
+        )
         if name == "search":
             p.add_argument("query")
             p.add_argument("--limit", type=int, default=5)
@@ -426,19 +487,27 @@ def main() -> int:
     args = parser().parse_args()
     try:
         if args.command == "doctor":
-            payload = doctor()
+            payload = doctor(audit=args.audit)
         elif args.command == "search":
-            payload = search(args.query, args.limit, args.timeout)
+            payload = search(args.query, args.limit, args.timeout, audit=args.audit)
         elif args.command == "video":
-            payload = inspect_video(args.target, args.timeout)
+            payload = inspect_video(args.target, args.timeout, audit=args.audit)
         elif args.command == "channel":
-            payload = inspect_collection(args.target, args.limit, args.tab, args.timeout)
+            payload = inspect_collection(
+                args.target, args.limit, args.tab, args.timeout, audit=args.audit
+            )
         elif args.command == "playlist":
-            payload = inspect_collection(args.target, args.limit, None, args.timeout)
+            payload = inspect_collection(
+                args.target, args.limit, None, args.timeout, audit=args.audit
+            )
         elif args.command == "transcript":
-            payload = transcript(args.target, args.languages, args.timeout)
+            payload = transcript(
+                args.target, args.languages, args.timeout, audit=args.audit
+            )
         else:
-            payload = comments(args.target, args.limit, args.sort, args.timeout)
+            payload = comments(
+                args.target, args.limit, args.sort, args.timeout, audit=args.audit
+            )
     except ValueError as exc:
         print(json.dumps({"ok": False, "status": "rejected", "error": str(exc)}, ensure_ascii=False), file=sys.stderr)
         return 2

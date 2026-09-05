@@ -2,6 +2,7 @@
 """Audit the public distribution and reachable Git blobs without exposing matches."""
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -64,6 +65,18 @@ FORBIDDEN_PATH_PARTS = {"memories", "sessions", "logs", "workspace", "cron"}
 PRIVATE_RUNTIME_ALLOWLIST = {".gitignore", "README.md", "SECURITY.md"}
 
 Finding = tuple[str, str, int]
+
+
+def audit_event(phase: str, **details: object) -> None:
+    """Emit aggregate scanner progress without file contents or matched values."""
+    event = {
+        "schema_version": "operation-audit/v1",
+        "component": "public_distribution_audit",
+        "operation": "public_distribution_scan",
+        "phase": phase,
+        **details,
+    }
+    print(json.dumps(event, sort_keys=True), file=sys.stderr)
 
 
 def _is_safe_example_value(value: str) -> bool:
@@ -169,6 +182,7 @@ def history_findings() -> tuple[list[Finding], int]:
 
 
 def main() -> int:
+    audit_event("started", scopes=["worktree", "reachable_git_blobs"])
     findings = worktree_findings()
     history, blobs_scanned = history_findings()
     findings.extend(history)
@@ -178,8 +192,20 @@ def main() -> int:
             location = f"{path}:{line}" if line else path
             print(f"{category} | {location}")
         print(f"findings: {len(unique)} (values suppressed)")
+        audit_event(
+            "completed",
+            outcome="findings",
+            finding_count=len(unique),
+            reachable_git_blobs_scanned=blobs_scanned,
+        )
         return 1
     print(f"public distribution audit: ok; reachable_git_blobs_scanned={blobs_scanned}")
+    audit_event(
+        "completed",
+        outcome="success",
+        finding_count=0,
+        reachable_git_blobs_scanned=blobs_scanned,
+    )
     return 0
 
 
