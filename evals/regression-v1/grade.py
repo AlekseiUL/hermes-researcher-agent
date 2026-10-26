@@ -3,6 +3,7 @@ def grade(case, output):
     errors=[]
     if not isinstance(output, dict): return ['output must be an object']
     sections=output.get('sections',{})
+    if not isinstance(sections, dict): return ['sections must be an object']
     for key in case['required_sections']:
         if not isinstance(sections.get(key),str) or not sections[key].strip(): errors.append('missing section:'+key)
     if output.get('decision') != case['expected_decision']: errors.append('unsupported decision')

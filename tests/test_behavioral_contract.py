@@ -8,6 +8,9 @@ class Benchmark(unittest.TestCase):
         for case in cases:
             with self.subTest(case=case['id']):
                 good=case['golden_annotation']; self.assertEqual(m.grade(case,good),[])
+                for malformed in [None, [], 'invalid', 42]:
+                    bad=copy.deepcopy(good); bad['sections']=malformed
+                    self.assertTrue(m.grade(case,bad))
                 bad=copy.deepcopy(good); bad['claims'].append({'fact':'invented benefit','source':'https://invalid.invalid/invented'})
                 self.assertTrue(m.grade(case,bad))
                 bad=copy.deepcopy(good); del bad['sections'][case['required_sections'][0]]
