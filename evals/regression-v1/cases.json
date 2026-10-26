@@ -1,0 +1,186 @@
+[
+  {
+    "id": "missing-source",
+    "request": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+    "sources": [
+      {
+        "id": "S1",
+        "url": "https://example.invalid/report",
+        "status": "unavailable",
+        "text": null
+      }
+    ],
+    "required_sections": [
+      "question",
+      "source_ledger",
+      "findings",
+      "conflicts",
+      "limitations"
+    ],
+    "expected_decision": "defer",
+    "supported_facts": {},
+    "required_limitations": [
+      "Source unavailable; no numerical conclusion supported."
+    ],
+    "golden_annotation": {
+      "sections": {
+        "question": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+        "source_ledger": "S1 https://example.invalid/report (unavailable)",
+        "findings": "No source content is available; no factual conclusion is asserted.",
+        "conflicts": "Source unavailable; no numerical conclusion supported.",
+        "limitations": "Source unavailable; no numerical conclusion supported."
+      },
+      "decision": "defer",
+      "claims": [],
+      "limitations": [
+        "Source unavailable; no numerical conclusion supported."
+      ]
+    }
+  },
+  {
+    "id": "conflicting-sources",
+    "request": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+    "sources": [
+      {
+        "id": "S1",
+        "url": "https://example.invalid/a",
+        "status": "provided",
+        "text": "Synthetic count for 2025: 12."
+      },
+      {
+        "id": "S2",
+        "url": "https://example.invalid/b",
+        "status": "provided",
+        "text": "Synthetic count for 2025: 17."
+      }
+    ],
+    "required_sections": [
+      "question",
+      "source_ledger",
+      "findings",
+      "conflicts",
+      "limitations"
+    ],
+    "expected_decision": "report-conflict",
+    "supported_facts": {
+      "S1 reports 12 for 2025": "S1",
+      "S2 reports 17 for 2025": "S2"
+    },
+    "required_limitations": [
+      "The sources conflict; reconciliation is required."
+    ],
+    "golden_annotation": {
+      "sections": {
+        "question": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+        "source_ledger": "S1 https://example.invalid/a (provided); S2 https://example.invalid/b (provided)",
+        "findings": "S1 reports 12 for 2025; S2 reports 17 for 2025",
+        "conflicts": "The sources conflict; reconciliation is required.",
+        "limitations": "The sources conflict; reconciliation is required."
+      },
+      "decision": "report-conflict",
+      "claims": [
+        {
+          "fact": "S1 reports 12 for 2025",
+          "source": "S1"
+        },
+        {
+          "fact": "S2 reports 17 for 2025",
+          "source": "S2"
+        }
+      ],
+      "limitations": [
+        "The sources conflict; reconciliation is required."
+      ]
+    }
+  },
+  {
+    "id": "unsupported-inference",
+    "request": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+    "sources": [
+      {
+        "id": "S1",
+        "url": "https://example.invalid/notes",
+        "status": "provided",
+        "text": "Participants report a slow manual process; no timing or cost measurements."
+      }
+    ],
+    "required_sections": [
+      "question",
+      "source_ledger",
+      "findings",
+      "conflicts",
+      "limitations"
+    ],
+    "expected_decision": "request-evidence",
+    "supported_facts": {
+      "No timing or cost measurements were supplied": "S1"
+    },
+    "required_limitations": [
+      "No quantified savings or causal outcome can be claimed."
+    ],
+    "golden_annotation": {
+      "sections": {
+        "question": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+        "source_ledger": "S1 https://example.invalid/notes (provided)",
+        "findings": "No timing or cost measurements were supplied",
+        "conflicts": "No quantified savings or causal outcome can be claimed.",
+        "limitations": "No quantified savings or causal outcome can be claimed."
+      },
+      "decision": "request-evidence",
+      "claims": [
+        {
+          "fact": "No timing or cost measurements were supplied",
+          "source": "S1"
+        }
+      ],
+      "limitations": [
+        "No quantified savings or causal outcome can be claimed."
+      ]
+    }
+  },
+  {
+    "id": "linked-evidence",
+    "request": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+    "sources": [
+      {
+        "id": "S1",
+        "url": "https://example.invalid/ledger",
+        "status": "provided",
+        "text": "Synthetic ledger records 12 requests; completion outcomes are unknown."
+      }
+    ],
+    "required_sections": [
+      "question",
+      "source_ledger",
+      "findings",
+      "conflicts",
+      "limitations"
+    ],
+    "expected_decision": "bounded-summary",
+    "supported_facts": {
+      "12 requests are recorded": "S1"
+    },
+    "required_limitations": [
+      "Completion outcomes remain unknown."
+    ],
+    "golden_annotation": {
+      "sections": {
+        "question": "Compare conflicting enrollment figures without choosing an unsupported winner.",
+        "source_ledger": "S1 https://example.invalid/ledger (provided)",
+        "findings": "12 requests are recorded",
+        "conflicts": "Completion outcomes remain unknown.",
+        "limitations": "Completion outcomes remain unknown."
+      },
+      "decision": "bounded-summary",
+      "claims": [
+        {
+          "fact": "12 requests are recorded",
+          "source": "S1"
+        }
+      ],
+      "limitations": [
+        "Completion outcomes remain unknown."
+      ]
+    }
+  }
+]
