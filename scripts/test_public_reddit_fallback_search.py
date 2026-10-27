@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "tools" / "public_reddit_fallback_search.py"
+MODULE_PATH = ROOT / "helpers" / "public_reddit_fallback_search.py"
 spec = importlib.util.spec_from_file_location("public_reddit_fallback_search", MODULE_PATH)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)

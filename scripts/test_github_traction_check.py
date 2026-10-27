@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "tools" / "github_traction_check.py"
+MODULE_PATH = ROOT / "helpers" / "github_traction_check.py"
 spec = importlib.util.spec_from_file_location("github_traction_check", MODULE_PATH)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)

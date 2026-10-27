@@ -9,7 +9,7 @@ README = ROOT / "README.md"
 RU_MARKER = "# Hermes Researcher Agent — исследовательский агент для Hermes"
 
 CAPABILITY_PAIRS = (
-    ("v0.4.0", "v0.4.0"),
+    ("v0.4.1", "v0.4.1"),
     ("research-run/v1", "research-run/v1"),
     ("Source-lineage checks", "Проверка происхождения источников"),
     ("Counterexample gate", "Поиск контрпримеров"),

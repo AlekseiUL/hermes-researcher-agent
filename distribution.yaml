@@ -1,5 +1,5 @@
 name: hermes-researcher-agent
-version: 0.4.0
+version: 0.4.1
 description: "A privacy-safe Hermes researcher profile with broad public-source research, bounded YouTube search, transcripts and minimized comments, source-lineage checks, and decision-ready briefs."
 author: "Aleksei Ulianov / Sprut_AI"
 license: "MIT"

@@ -25,7 +25,7 @@ This pack is public-only by default. It never requires cookies, login, OAuth, AP
 Use for finding a bounded set of public videos:
 
 ```bash
-python3 tools/youtube_research.py search "<public query>" --limit 5 --json
+python3 helpers/youtube_research.py search "<public query>" --limit 5 --json
 ```
 
 The helper rejects queries containing email addresses, local paths, phone-like values, and common credential shapes before network access.
@@ -35,7 +35,7 @@ The helper rejects queries containing email addresses, local paths, phone-like v
 Use for current public metadata and subtitle availability:
 
 ```bash
-python3 tools/youtube_research.py video "<public video URL or ID>" --json
+python3 helpers/youtube_research.py video "<public video URL or ID>" --json
 ```
 
 Treat views, likes, and comments as volatile observations. Record the collection date. Creator-side CTR, retention, traffic source, subscriber conversion, and revenue are unavailable unless the creator supplies them separately.
@@ -43,9 +43,9 @@ Treat views, likes, and comments as volatile observations. Record the collection
 ### Channel or playlist scan
 
 ```bash
-python3 tools/youtube_research.py channel "https://www.youtube.com/@handle" --tab videos --limit 10 --json
-python3 tools/youtube_research.py channel "https://www.youtube.com/@handle" --tab shorts --limit 10 --json
-python3 tools/youtube_research.py playlist "<public playlist URL>" --limit 10 --json
+python3 helpers/youtube_research.py channel "https://www.youtube.com/@handle" --tab videos --limit 10 --json
+python3 helpers/youtube_research.py channel "https://www.youtube.com/@handle" --tab shorts --limit 10 --json
+python3 helpers/youtube_research.py playlist "<public playlist URL>" --limit 10 --json
 ```
 
 The channel URL is normalized to an explicit `videos`, `shorts`, or `live` tab. Flat listings are discovery evidence only; inspect shortlisted videos separately for current metrics.
@@ -53,7 +53,7 @@ The channel URL is normalized to an explicit `videos`, `shorts`, or `live` tab. 
 ### Transcript
 
 ```bash
-python3 tools/youtube_research.py transcript "<public video URL or ID>" --languages "en.*,en,ru.*,ru" --json
+python3 helpers/youtube_research.py transcript "<public video URL or ID>" --languages "en.*,en,ru.*,ru" --json
 ```
 
 The helper writes subtitle files only inside a temporary directory, converts one public VTT track to bounded text, and removes the temporary directory. Automatic captions may be wrong. Transcript absence means `no_subtitles`, not that the video lacks relevant content.
@@ -63,7 +63,7 @@ The helper writes subtitle files only inside a temporary directory, converts one
 Use comments only when audience response affects the decision:
 
 ```bash
-python3 tools/youtube_research.py comments "<public video URL or ID>" --limit 10 --sort top --json
+python3 helpers/youtube_research.py comments "<public video URL or ID>" --limit 10 --sort top --json
 ```
 
 The helper enforces a maximum of 50 retained comments and passes an explicit
@@ -89,7 +89,7 @@ Generated evidence belongs in the user's local research instance, outside this r
 ## Research sequence
 
 1. Frame the decision and choose quick or deep scope.
-2. Run `python3 tools/youtube_research.py doctor --json`.
+2. Run `python3 helpers/youtube_research.py doctor --json`.
 3. Search broadly with bounded queries.
 4. Deduplicate by video ID and channel.
 5. Inspect shortlisted videos and record collection time.

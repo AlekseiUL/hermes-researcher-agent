@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.1 — unreleased
+
+- Include the accepted main-branch remediation since the prior published tag.
+- Pin CI Actions to verified commits and add review-first dependency maintenance.
+- Re-run offline regression and clean artifact installation before publication.
+
+
 All notable public-distribution changes are documented here.
 
 ## Unreleased
