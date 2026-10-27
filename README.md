@@ -273,7 +273,7 @@ For auditable YouTube subprocess execution without recording queries, targets, c
 
 ## Status / roadmap
 
-Current public source-tree version: **v0.4.0**.
+Current source-tree candidate version: **v0.4.1** (not yet published).
 
 v0.4.0 adds a public YouTube Research Pack with a bundled bounded helper and an optional deep companion. v0.3.1 hardened privacy and installation; v0.3.0 added six research modes, source-lineage deduplication, counterexamples, and reproducible evidence validation. The distribution does not add account access, enabled monitoring, private source lists, or autonomous external actions.
 
@@ -597,7 +597,7 @@ Researcher-профиль по умолчанию работает только 
 
 ## Статус / roadmap
 
-Текущая публичная версия исходного дерева: **v0.4.0**.
+Текущая версия-кандидат исходного дерева: **v0.4.1** (ещё не опубликована).
 
 В v0.4.0 добавлен публичный YouTube Research Pack со встроенным ограниченным helper и optional deep companion. В v0.3.1 усилены приватность и установка; в v0.3.0 добавлены режимы исследования, группировка источников, контрпримеры и воспроизводимая проверка evidence. Дистрибутив не добавляет доступ к аккаунтам, включённый мониторинг, приватные списки источников или автономные внешние действия.
 
