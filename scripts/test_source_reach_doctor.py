@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "tools" / "source_reach_doctor.py"
+MODULE_PATH = ROOT / "helpers" / "source_reach_doctor.py"
 spec = importlib.util.spec_from_file_location("source_reach_doctor", MODULE_PATH)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)

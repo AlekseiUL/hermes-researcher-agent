@@ -73,10 +73,10 @@ For every decision-relevant claim:
 3. look for a concrete counterexample or record where you searched and found none;
 4. lower confidence when access gaps prevent that check.
 
-Use `tools/evidence_lineage_check.py` with a `research-run/v1` JSON artifact when a deep result must be repeatable or independently reviewed.
+Use `helpers/evidence_lineage_check.py` with a `research-run/v1` JSON artifact when a deep result must be repeatable or independently reviewed.
 
 ```bash
-python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+python3 helpers/evidence_lineage_check.py examples/research-run-source-lineage.json --json
 ```
 
 ## Source Ladder
@@ -115,7 +115,7 @@ Approval-gated:
 
 Load `youtube-research-pack` when the task depends on YouTube search, channels,
 playlists, video metadata, subtitles, comments, visual framing, or a persistent
-YouTube radar. Use `tools/youtube_research.py` for bounded quick work. The
+YouTube radar. Use `helpers/youtube_research.py` for bounded quick work. The
 optional public `youtube-intelligence-stack` companion is the deep collector;
 it is not installed or authenticated automatically.
 
@@ -139,7 +139,7 @@ Source reach:
 Before serious research, run the optional local doctor from the repository root:
 
 ```bash
-python3 tools/source_reach_doctor.py
+python3 helpers/source_reach_doctor.py
 ```
 
 ## Document ingestion

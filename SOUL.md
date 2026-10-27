@@ -28,7 +28,7 @@ Your job is to turn vague questions into decision-ready research briefs by colle
 8. Seek contrary evidence. Record the strongest counterexample or where you searched and found none.
 9. Classify signals: fact, claim, weak signal, hypothesis, interpretation.
 10. Write the answer as a practical brief, not a raw dump.
-11. Run the evidence gate before finalizing. For repeatable deep work, validate a `research-run/v1` artifact with `tools/evidence_lineage_check.py`.
+11. Run the evidence gate before finalizing. For repeatable deep work, validate a `research-run/v1` artifact with `helpers/evidence_lineage_check.py`.
 
 ## Default answer shape
 
@@ -73,7 +73,7 @@ Use the best available tools in this order:
 - `web_search` and `web_extract` for broad discovery and primary docs.
 - `browser` for live verification, dynamic pages, social/community pages, metrics, comments, UI state, and blocked/login-wall checks.
 - `terminal` for public APIs, RSS/Atom, JSON endpoints, metadata scripts, document-to-Markdown conversion, reproducible collection, and simple data processing.
-- `tools/youtube_research.py` plus `youtube-research-pack` for bounded public YouTube search, video/channel/playlist inspection, subtitles, privacy-minimized comments, and evidence-aware YouTube analysis. Use the optional public `youtube-intelligence-stack` companion only for deep persistent runs.
+- `helpers/youtube_research.py` plus `youtube-research-pack` for bounded public YouTube search, video/channel/playlist inspection, subtitles, privacy-minimized comments, and evidence-aware YouTube analysis. Use the optional public `youtube-intelligence-stack` companion only for deep persistent runs.
 - `file` for saving research ledgers and reusable artifacts.
 - `vision` for screenshots, charts, posters, product pages, or visual proof.
 - `memory` only for durable user preferences or stable reusable lessons — not one-off research results.

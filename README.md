@@ -163,29 +163,29 @@ Real examples included in this repo:
 Run the GitHub helper yourself. It is unauthenticated by default and refuses private repositories. If public API rate limits require authentication, opt in explicitly with `--token-env GITHUB_TOKEN`; the helper still rejects private visibility and never prints token values.
 
 ```bash
-python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
-python3 tools/github_traction_check.py NousResearch/hermes-agent --json
-python3 tools/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
+python3 helpers/github_traction_check.py AlekseiUL/hermes-researcher-agent
+python3 helpers/github_traction_check.py NousResearch/hermes-agent --json
+python3 helpers/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
 ```
 
 Validate the included reproducible research run. It reports both page count and independent lineage count, so copied announcements cannot inflate the evidence:
 
 ```bash
-python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+python3 helpers/evidence_lineage_check.py examples/research-run-source-lineage.json --json
 ```
 
 Use the Reddit fallback only for public, non-sensitive queries. The query is transmitted to Reddit and public archive endpoints; before network access, the CLI rejects email addresses, local paths, phone-like values, and common token shapes:
 
 ```bash
-python3 tools/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
+python3 helpers/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
 ```
 
 Run the safe source-reach doctor before serious research. It is read-only: no cookies, no login, no social actions, no MCP registration.
 
 ```bash
-python3 tools/source_reach_doctor.py
-python3 tools/source_reach_doctor.py --json
-python3 tools/source_reach_doctor.py --skip-youtube
+python3 helpers/source_reach_doctor.py
+python3 helpers/source_reach_doctor.py --json
+python3 helpers/source_reach_doctor.py --skip-youtube
 ```
 
 Typical interpretation:
@@ -201,13 +201,13 @@ The bundled lightweight helper ignores inherited `yt-dlp` configuration, so a
 user-level config cannot silently add cookies or account state:
 
 ```bash
-python3 tools/youtube_research.py doctor --json
-python3 tools/youtube_research.py search "AI agents" --limit 5 --json
-python3 tools/youtube_research.py video "dQw4w9WgXcQ" --json
-python3 tools/youtube_research.py channel "https://www.youtube.com/@NousResearch" --tab videos --limit 10 --json
-python3 tools/youtube_research.py playlist "https://www.youtube.com/playlist?list=PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs" --limit 10 --json
-python3 tools/youtube_research.py transcript "dQw4w9WgXcQ" --languages "en.*,en,ru.*,ru" --json
-python3 tools/youtube_research.py comments "9GpWELm3_XI" --limit 10 --sort top --json
+python3 helpers/youtube_research.py doctor --json
+python3 helpers/youtube_research.py search "AI agents" --limit 5 --json
+python3 helpers/youtube_research.py video "dQw4w9WgXcQ" --json
+python3 helpers/youtube_research.py channel "https://www.youtube.com/@NousResearch" --tab videos --limit 10 --json
+python3 helpers/youtube_research.py playlist "https://www.youtube.com/playlist?list=PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs" --limit 10 --json
+python3 helpers/youtube_research.py transcript "dQw4w9WgXcQ" --languages "en.*,en,ru.*,ru" --json
+python3 helpers/youtube_research.py comments "9GpWELm3_XI" --limit 10 --sort top --json
 ```
 
 For persistent topic/channel watchlists, comments, metric snapshots, and
@@ -234,11 +234,11 @@ comments. The pack reports these states instead of suggesting a bypass.
 - [`skills/markitdown-document-ingestion/SKILL.md`](skills/markitdown-document-ingestion/SKILL.md) — optional document-to-Markdown intake workflow for public research files.
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — deep research brief template.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — source ledger template.
-- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — safe public-source reach diagnostics: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke, and approval-gated social/MCP detection.
-- [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
-- [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
-- [`tools/evidence_lineage_check.py`](tools/evidence_lineage_check.py) — validates reproducible runs, independent source lineages, counterexamples, access state, and decision-relevant evidence.
-- [`tools/youtube_research.py`](tools/youtube_research.py) — bounded public YouTube search, video/channel/playlist inspection, temporary transcript extraction, and identity-minimized comment sampling.
+- [`helpers/source_reach_doctor.py`](helpers/source_reach_doctor.py) — safe public-source reach diagnostics: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke, and approval-gated social/MCP detection.
+- [`helpers/public_reddit_fallback_search.py`](helpers/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
+- [`helpers/github_traction_check.py`](helpers/github_traction_check.py) — public GitHub metadata traction check helper.
+- [`helpers/evidence_lineage_check.py`](helpers/evidence_lineage_check.py) — validates reproducible runs, independent source lineages, counterexamples, access state, and decision-relevant evidence.
+- [`helpers/youtube_research.py`](helpers/youtube_research.py) — bounded public YouTube search, video/channel/playlist inspection, temporary transcript extraction, and identity-minimized comment sampling.
 - [`skills/youtube-research-pack/SKILL.md`](skills/youtube-research-pack/SKILL.md) — evidence-aware YouTube workflows and privacy boundaries.
 - [`skills/youtube-research-pack/templates/youtube-research-brief.md`](skills/youtube-research-pack/templates/youtube-research-brief.md) — reusable YouTube research brief.
 - [`skills/research-intelligence/references/research-modes.md`](skills/research-intelligence/references/research-modes.md) — depth router and stop rules for six public-safe research modes.
@@ -488,29 +488,29 @@ Find whether this GitHub repo has real adoption or only stars. Check docs, relea
 Запуск GitHub helper. По умолчанию он работает без авторизации и отказывается читать private-репозитории. Если для public API не хватает rate limit, токен включается явно через `--token-env GITHUB_TOKEN`; private visibility всё равно блокируется, значение токена не печатается.
 
 ```bash
-python3 tools/github_traction_check.py AlekseiUL/hermes-researcher-agent
-python3 tools/github_traction_check.py NousResearch/hermes-agent --json
-python3 tools/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
+python3 helpers/github_traction_check.py AlekseiUL/hermes-researcher-agent
+python3 helpers/github_traction_check.py NousResearch/hermes-agent --json
+python3 helpers/github_traction_check.py NousResearch/hermes-agent --token-env GITHUB_TOKEN --json
 ```
 
 Проверка воспроизводимого research-run. В результате отдельно показаны количество страниц и количество независимых линий источников:
 
 ```bash
-python3 tools/evidence_lineage_check.py examples/research-run-source-lineage.json --json
+python3 helpers/evidence_lineage_check.py examples/research-run-source-lineage.json --json
 ```
 
 Reddit fallback предназначен только для открытых, нечувствительных запросов. Запрос передаётся Reddit и публичным архивным endpoints; перед обращением к сети CLI блокирует email, локальные пути, похожие на телефон значения и распространённые форматы токенов:
 
 ```bash
-python3 tools/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
+python3 helpers/public_reddit_fallback_search.py "Hermes Agent research" --limit 5 --json
 ```
 
 Перед серьёзным research можно прогнать safe source-reach doctor. Он read-only: без cookies, login, social actions и MCP registration.
 
 ```bash
-python3 tools/source_reach_doctor.py
-python3 tools/source_reach_doctor.py --json
-python3 tools/source_reach_doctor.py --skip-youtube
+python3 helpers/source_reach_doctor.py
+python3 helpers/source_reach_doctor.py --json
+python3 helpers/source_reach_doctor.py --skip-youtube
 ```
 
 Как читать результат:
@@ -526,13 +526,13 @@ python3 tools/source_reach_doctor.py --skip-youtube
 поэтому локальные cookies или account state не могут подключиться незаметно:
 
 ```bash
-python3 tools/youtube_research.py doctor --json
-python3 tools/youtube_research.py search "AI agents" --limit 5 --json
-python3 tools/youtube_research.py video "dQw4w9WgXcQ" --json
-python3 tools/youtube_research.py channel "https://www.youtube.com/@NousResearch" --tab videos --limit 10 --json
-python3 tools/youtube_research.py playlist "https://www.youtube.com/playlist?list=PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs" --limit 10 --json
-python3 tools/youtube_research.py transcript "dQw4w9WgXcQ" --languages "en.*,en,ru.*,ru" --json
-python3 tools/youtube_research.py comments "9GpWELm3_XI" --limit 10 --sort top --json
+python3 helpers/youtube_research.py doctor --json
+python3 helpers/youtube_research.py search "AI agents" --limit 5 --json
+python3 helpers/youtube_research.py video "dQw4w9WgXcQ" --json
+python3 helpers/youtube_research.py channel "https://www.youtube.com/@NousResearch" --tab videos --limit 10 --json
+python3 helpers/youtube_research.py playlist "https://www.youtube.com/playlist?list=PL590L5WQmH8fJ54F369BLDSqIwcs-TCfs" --limit 10 --json
+python3 helpers/youtube_research.py transcript "dQw4w9WgXcQ" --languages "en.*,en,ru.*,ru" --json
+python3 helpers/youtube_research.py comments "9GpWELm3_XI" --limit 10 --sort top --json
 ```
 
 Для постоянных topic/channel watchlists, comments, snapshots и Markdown reports
@@ -558,11 +558,11 @@ Pack честно возвращает degraded state и не предлагае
 - [`skills/markitdown-document-ingestion/SKILL.md`](skills/markitdown-document-ingestion/SKILL.md) — optional workflow для перевода публичных research-файлов в Markdown.
 - [`skills/research-intelligence/templates/research-brief.md`](skills/research-intelligence/templates/research-brief.md) — шаблон глубокого research brief.
 - [`skills/research-intelligence/templates/source-ledger.md`](skills/research-intelligence/templates/source-ledger.md) — шаблон source ledger.
-- [`tools/source_reach_doctor.py`](tools/source_reach_doctor.py) — безопасная диагностика public-source reach: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke и detection approval-gated social/MCP tools.
-- [`tools/public_reddit_fallback_search.py`](tools/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
-- [`tools/github_traction_check.py`](tools/github_traction_check.py) — public GitHub metadata traction check helper.
-- [`tools/evidence_lineage_check.py`](tools/evidence_lineage_check.py) — проверяет research-run, независимость источников, контрпримеры, доступность и доказательства важных выводов.
-- [`tools/youtube_research.py`](tools/youtube_research.py) — ограниченный public YouTube search, проверка видео/каналов/плейлистов, временное извлечение субтитров и обезличенная выборка комментариев.
+- [`helpers/source_reach_doctor.py`](helpers/source_reach_doctor.py) — безопасная диагностика public-source reach: Jina, GitHub public API, Reddit fallback, optional MarkItDown detection, optional YouTube subtitle smoke и detection approval-gated social/MCP tools.
+- [`helpers/public_reddit_fallback_search.py`](helpers/public_reddit_fallback_search.py) — public-only Reddit fallback helper.
+- [`helpers/github_traction_check.py`](helpers/github_traction_check.py) — public GitHub metadata traction check helper.
+- [`helpers/evidence_lineage_check.py`](helpers/evidence_lineage_check.py) — проверяет research-run, независимость источников, контрпримеры, доступность и доказательства важных выводов.
+- [`helpers/youtube_research.py`](helpers/youtube_research.py) — ограниченный public YouTube search, проверка видео/каналов/плейлистов, временное извлечение субтитров и обезличенная выборка комментариев.
 - [`skills/youtube-research-pack/SKILL.md`](skills/youtube-research-pack/SKILL.md) — YouTube workflow, evidence gate и privacy boundaries.
 - [`skills/youtube-research-pack/templates/youtube-research-brief.md`](skills/youtube-research-pack/templates/youtube-research-brief.md) — шаблон YouTube research brief.
 - [`skills/research-intelligence/references/research-modes.md`](skills/research-intelligence/references/research-modes.md) — шесть безопасных режимов исследования и правила остановки.

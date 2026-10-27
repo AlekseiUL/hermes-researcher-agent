@@ -7,3 +7,5 @@ Distribution: complete source archive. This candidate includes all changes on ma
 Install into a fresh temporary environment from the built archive, not an editable checkout. Run the documented offline core command/fixture before publishing; do not enable profiles, contact paid providers or start services. After release, download the exact public artifact and repeat this check.
 
 Rollback: close the unmerged PR; after merge, submit a revert PR. Do not rewrite the release tag or delete old artifacts. A bad release must be superseded and clearly marked, with owner approval.
+
+Packaging fix: portable helper programs live in `helpers/`, not the reserved root `tools/` that Hermes excludes during profile installation. Fresh native installation must retain and execute the offline evidence helper.

@@ -10,7 +10,7 @@ from contextlib import redirect_stderr
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "tools" / "youtube_research.py"
+MODULE_PATH = ROOT / "helpers" / "youtube_research.py"
 spec = importlib.util.spec_from_file_location("youtube_research", MODULE_PATH)
 assert spec and spec.loader
 mod = importlib.util.module_from_spec(spec)

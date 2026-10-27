@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE_PATH = ROOT / "tools" / "evidence_lineage_check.py"
+MODULE_PATH = ROOT / "helpers" / "evidence_lineage_check.py"
 spec = importlib.util.spec_from_file_location("evidence_lineage_check", MODULE_PATH)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)

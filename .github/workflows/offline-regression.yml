@@ -16,3 +16,5 @@ jobs:
           python-version: '3.12'
       - name: Run synthetic offline regression
         run: python3 -m unittest discover -s tests -p test_behavioral_contract.py -v
+      - name: Verify portable helpers survive distribution installation
+        run: python3 -B -m unittest discover -s tests -p test_distribution_install.py -v

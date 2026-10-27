@@ -4,7 +4,7 @@ This document records the repository maintainer's triage of generic agent-securi
 
 ## Triage: AT-001, AUD-003, and LOG-001
 
-A scan reported `AT-001`, `AUD-003`, and `LOG-001` findings in `scripts/audit_public_distribution.py`, helper tests, and `tools/youtube_research.py`.
+A scan reported `AT-001`, `AUD-003`, and `LOG-001` findings in `scripts/audit_public_distribution.py`, helper tests, and `helpers/youtube_research.py`.
 
 The reported locations were reviewed against the source:
 
@@ -21,12 +21,12 @@ These findings therefore do not establish an exploitable high-severity vulnerabi
 The repository now exposes privacy-minimized `operation-audit/v1` JSONL events:
 
 - `scripts/audit_public_distribution.py` always emits aggregate start/completion events on `stderr` for worktree and reachable-Git-blob scans;
-- `tools/youtube_research.py ... --audit` emits start/completion events on `stderr` around real `yt-dlp` subprocess operations.
+- `helpers/youtube_research.py ... --audit` emits start/completion events on `stderr` around real `yt-dlp` subprocess operations.
 
 Example:
 
 ```bash
-python3 tools/youtube_research.py search "AI agents" --limit 3 --json --audit \
+python3 helpers/youtube_research.py search "AI agents" --limit 3 --json --audit \
   2>operation-audit.jsonl
 ```
 
